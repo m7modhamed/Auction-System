@@ -1,16 +1,22 @@
 package com.auction.security.entites;
 
+import com.auction.Entity.Auction;
+import com.auction.Entity.PaymentAccount;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "app_user")
 public class User {
@@ -29,6 +35,7 @@ public class User {
 
     @Column(nullable = false)
     @Size(max = 100)
+    @Email
     private String email;
 
     @Column(nullable = false)
@@ -48,11 +55,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles=new HashSet<>();
 
-    public boolean addRole(Role role){
-        return this.roles.add(role);
-    }
-    public boolean deleteRole(Role role){
-        return this.roles.remove(role);
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private PaymentAccount paymentAccount;
+
+
+    @OneToMany(mappedBy = "seller",fetch = FetchType.EAGER)
+    @JsonBackReference
+    private List<Auction> auctions;
 
 }

@@ -24,7 +24,7 @@ public class PasswordResetToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public PasswordResetToken( User user,String token) {
+    public PasswordResetToken(User user, String token) {
         this.user = user;
         this.token = token;
         this.expirationTime = TokenExpirationTime.getExpirationTime();

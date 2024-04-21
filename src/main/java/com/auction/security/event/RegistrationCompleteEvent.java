@@ -12,7 +12,7 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
     private String confirmationUrl;
     public RegistrationCompleteEvent(User user, String confirmationUrl) {
         super(user);
-        this.user=user;
+        this.user = user;
         this.confirmationUrl=confirmationUrl;
     }
 }

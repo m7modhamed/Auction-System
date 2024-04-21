@@ -27,14 +27,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auction/**","/category/**", "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auction/all" , "/users").permitAll()
                         .requestMatchers("/moderator/**" ).hasRole("MODERATOR")
                         .requestMatchers(HttpMethod.GET,"/admin").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/user").hasRole("USER")
                         .anyRequest().authenticated());
 
-
         return http.build();
     }
+
+
 }

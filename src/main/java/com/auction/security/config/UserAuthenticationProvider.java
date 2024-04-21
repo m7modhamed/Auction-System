@@ -1,12 +1,12 @@
 package com.auction.security.config;
 
+import com.auction.security.dtos.UserAuthDto;
 import com.auction.security.entites.User;
 import com.auction.security.services.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auction.security.dtos.UserDto;
 import com.auction.security.entites.Role;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +33,9 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(UserDto user) {
+    public String createToken(UserAuthDto user) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 3600000); // 1 hour
+        Date validity = new Date(now.getTime() + 36000000); // 10 hours
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
@@ -55,7 +55,7 @@ public class UserAuthenticationProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        UserDto user = UserDto.builder()
+        UserAuthDto user = UserAuthDto.builder()
                 .email(decoded.getSubject())
                 .firstName(decoded.getClaim("firstName").asString())
                 .lastName(decoded.getClaim("lastName").asString())

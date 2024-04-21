@@ -1,11 +1,11 @@
 package com.auction.security.services;
 
+import com.auction.security.dtos.UserAuthDto;
+import com.auction.security.entites.User;
 import com.auction.security.password.IpasswordResetTokenService;
 import com.auction.security.dtos.CredentialsDto;
 import com.auction.security.dtos.SignUpDto;
-import com.auction.security.dtos.UserDto;
 import com.auction.security.entites.Role;
-import com.auction.security.entites.User;
 import com.auction.security.event.RegistrationCompleteEvent;
 import com.auction.security.event.listener.RegistrationCompleteEventListener;
 import com.auction.security.exceptions.AppException;
@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
@@ -40,17 +41,34 @@ public class UserService {
     private final ApplicationEventPublisher publisher;
     private final RegistrationCompleteEventListener eventListener;
 
-    public UserDto login(CredentialsDto credentialsDto) {
+
+
+    public UserAuthDto login(CredentialsDto credentialsDto) {
+        // Find user by email
         User user = userRepository.findByEmail(credentialsDto.login())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
-        if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
-            return userMapper.toUserDto(user);
+        // Check password
+        if (!passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()), user.getPassword())) {
+            throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
         }
-        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+
+        // Check user status
+        if (!user.getIsActive()) {
+            throw new AppException("User is not active", HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if user is blocked
+        if (user.getIsBlocked()) {
+            throw new AppException("User is blocked", HttpStatus.BAD_REQUEST);
+        }
+
+        // Return user DTO
+        return userMapper.toUserDto(user);
     }
 
-    public UserDto register(SignUpDto userDto, HttpServletRequest request) {
+
+    public UserAuthDto register(SignUpDto userDto, HttpServletRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(userDto.email());
 
         if (optionalUser.isPresent()) {
@@ -64,10 +82,8 @@ public class UserService {
         user.setIsActive(false);
         user.setRoles(new HashSet<>());
         Optional<Role> role=roleRepository.findByName("ROLE_USER");
-        //Role role=new Role("ROLE_USER","basic role");
-        //roleRepository.save(role);
         if(role.isPresent()) {
-            user.addRole(role.get());
+            user.getRoles().add(role.get());
         }else{
             throw new AppException("the role not found",HttpStatus.NOT_FOUND);
         }
@@ -76,6 +92,7 @@ public class UserService {
         return userMapper.toUserDto(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -110,5 +127,9 @@ public class UserService {
         }
 
         return "User not found";
+    }
+
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
     }
 }

@@ -3,11 +3,12 @@ package com.auction.security.controllers;
 import com.auction.security.config.UserAuthenticationProvider;
 import com.auction.security.dtos.CredentialsDto;
 import com.auction.security.dtos.SignUpDto;
-import com.auction.security.dtos.UserDto;
+import com.auction.security.dtos.UserAuthDto;
 import com.auction.security.entites.User;
 import com.auction.security.event.listener.RegistrationCompleteEventListener;
 import com.auction.security.mappers.UserMapper;
 import com.auction.security.password.IpasswordResetTokenService;
+import com.auction.security.repositories.UserRepository;
 import com.auction.security.token.VerificationToken;
 import com.auction.security.token.VerificationTokenService;
 import com.auction.security.services.UserService;
@@ -20,12 +21,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
 
+    private final UserRepository userRepository;
     private final UserService userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final VerificationTokenService tokenService;
@@ -35,17 +38,21 @@ public class AuthController {
     @Value("${frontend.base-url}")
     private String frontendBaseUrl;
 
-
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getUsers(){
+        List<User> users=userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
-        UserDto userDto = userService.login(credentialsDto);
-        userDto.setToken(userAuthenticationProvider.createToken(userDto));
-        return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserAuthDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
+        UserAuthDto userAuthDto = userService.login(credentialsDto);
+        userAuthDto.setToken(userAuthenticationProvider.createToken(userAuthDto));
+        return ResponseEntity.ok(userAuthDto);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody @Valid SignUpDto user, HttpServletRequest request) {
-        UserDto createdUser = userService.register(user,request);
+    public ResponseEntity<UserAuthDto> register(@RequestBody @Valid SignUpDto user, HttpServletRequest request) {
+        UserAuthDto createdUser = userService.register(user,request);
         createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
         return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
     }
