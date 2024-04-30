@@ -1,4 +1,4 @@
-package com.auction.security.exceptions;
+package com.auction.exceptions;
 
 import org.springframework.http.HttpStatus;
 

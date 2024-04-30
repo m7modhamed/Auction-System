@@ -2,12 +2,14 @@ package com.auction.Mappers;
 
 import com.auction.Dtos.CategoryDto;
 import com.auction.Entity.Category;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-21T13:32:10+0300",
+    date = "2024-04-30T13:18:52+0300",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -24,6 +26,10 @@ public class CategoryMapperImpl implements CategoryMapper {
         categoryDto.id( category.getId() );
         categoryDto.name( category.getName() );
         categoryDto.description( category.getDescription() );
+        List<String> list = category.getAttributes();
+        if ( list != null ) {
+            categoryDto.attributes( new ArrayList<String>( list ) );
+        }
 
         return categoryDto.build();
     }
@@ -39,6 +45,10 @@ public class CategoryMapperImpl implements CategoryMapper {
         category.setId( categoryDto.getId() );
         category.setName( categoryDto.getName() );
         category.setDescription( categoryDto.getDescription() );
+        List<String> list = categoryDto.getAttributes();
+        if ( list != null ) {
+            category.setAttributes( new ArrayList<String>( list ) );
+        }
 
         return category;
     }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -32,6 +33,10 @@ public class Item {
     @JoinColumn(name = "category_id" , referencedColumnName = "id" ,nullable = false )
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
+
+
+    @ElementCollection
+    private Map<String,String> categoryAttributes;
 
 
 }

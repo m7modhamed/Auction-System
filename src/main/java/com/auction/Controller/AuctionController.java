@@ -12,11 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.BindException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,10 +31,12 @@ public class AuctionController {
     private final IAuctionService auctionService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseAuctionDto> createAuction(@RequestBody RequestAuctionDto requestAuction) {
+    public ResponseEntity<ResponseAuctionDto> createAuction(@RequestBody @Valid RequestAuctionDto requestAuction) {
+        // get user id
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((User) authentication.getPrincipal()).getId();
 
+        //creat auction
         Auction auction = auctionService.CreateAuction(requestAuction, userId);
 
         ResponseAuctionDto responseAuctionDto = auctionMapper.toResponseAuctionDto(auction);
@@ -40,20 +46,20 @@ public class AuctionController {
 
     public ResponseEntity<Auction> deleteAuction(@RequestBody Auction auction) {
 
-
         return ResponseEntity.ok(auction);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Auction>> getAuctions() {
+    public ResponseEntity<List<ResponseAuctionDto>> getAuctions() {
         List<Auction> auctions = auctionService.getAllAuctions();
 
-        return ResponseEntity.ok(auctions);
+        List<ResponseAuctionDto> responseAuction=new ArrayList<>();
+        for(Auction auction: auctions){
+            responseAuction.add(auctionMapper.toResponseAuctionDto(auction));
+        }
+        return ResponseEntity.ok(responseAuction);
     }
 
 
-  /* @ExceptionHandler(BindException.class)
-   public ResponseEntity<BindException> handleBindException(BindException ex){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
-   }*/
+
 }

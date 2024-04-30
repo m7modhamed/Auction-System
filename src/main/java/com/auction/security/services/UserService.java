@@ -8,7 +8,7 @@ import com.auction.security.dtos.SignUpDto;
 import com.auction.security.entites.Role;
 import com.auction.security.event.RegistrationCompleteEvent;
 import com.auction.security.event.listener.RegistrationCompleteEventListener;
-import com.auction.security.exceptions.AppException;
+import com.auction.exceptions.AppException;
 import com.auction.security.mappers.UserMapper;
 import com.auction.security.repositories.UserRepository;
 import com.auction.security.repositories.RoleRepository;
@@ -42,7 +42,6 @@ public class UserService {
     private final RegistrationCompleteEventListener eventListener;
 
 
-
     public UserAuthDto login(CredentialsDto credentialsDto) {
         // Find user by email
         User user = userRepository.findByEmail(credentialsDto.login())
@@ -68,6 +67,7 @@ public class UserService {
     }
 
 
+
     public UserAuthDto register(SignUpDto userDto, HttpServletRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(userDto.email());
 
@@ -77,7 +77,7 @@ public class UserService {
 
 
         User user = userMapper.signUpToUser(userDto);
-        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(userDto.password())));
+        user.setPassword(passwordEncoder.encode(userDto.password()));
         user.setIsBlocked(false);
         user.setIsActive(false);
         user.setRoles(new HashSet<>());

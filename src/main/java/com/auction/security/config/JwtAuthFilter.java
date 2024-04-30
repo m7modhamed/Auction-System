@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final UserAuthenticationProvider userAuthenticationProvider;
+    private final HandlerExceptionResolver exceptionResolver;
 
     @Override
     protected void doFilterInternal(
@@ -22,28 +24,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        try {
 
-        if (header != null) {
-            String[] authElements = header.split(" ");
+            String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            if (authElements.length == 2
-                    && "Bearer".equals(authElements[0])) {
-                try {
-                    if ("GET".equals(request.getMethod())) {
-                        SecurityContextHolder.getContext().setAuthentication(
-                                userAuthenticationProvider.validateTokenStrongly(authElements[1]));
-                    } else {
-                        SecurityContextHolder.getContext().setAuthentication(
-                                userAuthenticationProvider.validateTokenStrongly(authElements[1]));
+            if (header != null) {
+                String[] authElements = header.split(" ");
+
+                if (authElements.length == 2
+                        && "Bearer".equals(authElements[0])) {
+                    try {
+                        if ("GET".equals(request.getMethod())) {
+                            SecurityContextHolder.getContext().setAuthentication(
+                                    userAuthenticationProvider.validateTokenStrongly(authElements[1]));
+                        } else {
+                            SecurityContextHolder.getContext().setAuthentication(
+                                    userAuthenticationProvider.validateTokenStrongly(authElements[1]));
+                        }
+                    } catch (RuntimeException e) {
+                        SecurityContextHolder.clearContext();
+                        throw e;
+
                     }
-                } catch (RuntimeException e) {
-                    SecurityContextHolder.clearContext();
-                    throw e;
                 }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        }catch (Exception ex){
+            exceptionResolver.resolveException(request,response, null,ex);
+        }
     }
 }

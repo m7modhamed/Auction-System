@@ -9,15 +9,13 @@ import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.security.entites.User;
-import com.auction.security.exceptions.AppException;
+import com.auction.exceptions.AppException;
 import com.auction.security.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 

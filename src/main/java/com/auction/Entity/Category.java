@@ -21,4 +21,6 @@ public class Category {
     private String description;
 
 
+    @ElementCollection
+    private List<String> attributes;
 }

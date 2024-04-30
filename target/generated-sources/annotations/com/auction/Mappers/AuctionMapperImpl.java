@@ -10,15 +10,19 @@ import com.auction.Entity.Auction;
 import com.auction.Entity.Bid;
 import com.auction.Entity.Category;
 import com.auction.Entity.Item;
+import com.auction.Enums.Address;
+import com.auction.Enums.ItemStatus;
 import com.auction.security.entites.User;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-21T13:32:10+0300",
+    date = "2024-04-30T13:18:53+0300",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -32,10 +36,11 @@ public class AuctionMapperImpl implements AuctionMapper {
 
         RequestAuctionDto.RequestAuctionDtoBuilder requestAuctionDto = RequestAuctionDto.builder();
 
-        requestAuctionDto.title( auction.getTitle() );
         requestAuctionDto.expireDate( auction.getExpireDate() );
         requestAuctionDto.item( itemToItemDto( auction.getItem() ) );
-        requestAuctionDto.location( auction.getLocation() );
+        if ( auction.getLocation() != null ) {
+            requestAuctionDto.location( auction.getLocation().name() );
+        }
         requestAuctionDto.minBid( auction.getMinBid() );
         requestAuctionDto.initialPrice( auction.getInitialPrice() );
 
@@ -50,10 +55,11 @@ public class AuctionMapperImpl implements AuctionMapper {
 
         Auction auction1 = new Auction();
 
-        auction1.setTitle( auction.getTitle() );
         auction1.setExpireDate( auction.getExpireDate() );
         auction1.setItem( itemDtoToItem( auction.getItem() ) );
-        auction1.setLocation( auction.getLocation() );
+        if ( auction.getLocation() != null ) {
+            auction1.setLocation( Enum.valueOf( Address.class, auction.getLocation() ) );
+        }
         auction1.setMinBid( auction.getMinBid() );
         auction1.setInitialPrice( auction.getInitialPrice() );
 
@@ -68,7 +74,6 @@ public class AuctionMapperImpl implements AuctionMapper {
 
         ResponseAuctionDto.ResponseAuctionDtoBuilder responseAuctionDto = ResponseAuctionDto.builder();
 
-        responseAuctionDto.title( auction.getTitle() );
         responseAuctionDto.status( auction.isStatus() );
         responseAuctionDto.beginDate( auction.getBeginDate() );
         responseAuctionDto.expireDate( auction.getExpireDate() );
@@ -93,6 +98,10 @@ public class AuctionMapperImpl implements AuctionMapper {
         categoryDto.id( category.getId() );
         categoryDto.name( category.getName() );
         categoryDto.description( category.getDescription() );
+        List<String> list = category.getAttributes();
+        if ( list != null ) {
+            categoryDto.attributes( new ArrayList<String>( list ) );
+        }
 
         return categoryDto.build();
     }
@@ -110,8 +119,14 @@ public class AuctionMapperImpl implements AuctionMapper {
         if ( list != null ) {
             itemDto.images( new ArrayList<String>( list ) );
         }
-        itemDto.itemStatus( item.getItemStatus() );
+        if ( item.getItemStatus() != null ) {
+            itemDto.itemStatus( item.getItemStatus().name() );
+        }
         itemDto.category( categoryToCategoryDto( item.getCategory() ) );
+        Map<String, String> map = item.getCategoryAttributes();
+        if ( map != null ) {
+            itemDto.categoryAttributes( new LinkedHashMap<String, String>( map ) );
+        }
 
         return itemDto.build();
     }
@@ -126,6 +141,10 @@ public class AuctionMapperImpl implements AuctionMapper {
         category.setId( categoryDto.getId() );
         category.setName( categoryDto.getName() );
         category.setDescription( categoryDto.getDescription() );
+        List<String> list = categoryDto.getAttributes();
+        if ( list != null ) {
+            category.setAttributes( new ArrayList<String>( list ) );
+        }
 
         return category;
     }
@@ -143,8 +162,14 @@ public class AuctionMapperImpl implements AuctionMapper {
         if ( list != null ) {
             item.setImages( new ArrayList<String>( list ) );
         }
-        item.setItemStatus( itemDto.getItemStatus() );
+        if ( itemDto.getItemStatus() != null ) {
+            item.setItemStatus( Enum.valueOf( ItemStatus.class, itemDto.getItemStatus() ) );
+        }
         item.setCategory( categoryDtoToCategory( itemDto.getCategory() ) );
+        Map<String, String> map = itemDto.getCategoryAttributes();
+        if ( map != null ) {
+            item.setCategoryAttributes( new LinkedHashMap<String, String>( map ) );
+        }
 
         return item;
     }

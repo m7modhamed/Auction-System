@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 public class ResponseAuctionDto {
 
-    private String title;
 
     private boolean status;
 

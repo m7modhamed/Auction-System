@@ -1,3 +1,6 @@
 package com.auction.security.dtos;
 
-public record CredentialsDto (String login, char[] password) { }
+import jakarta.validation.constraints.Email;
+
+public record CredentialsDto (@Email String login, char[] password) { }
+

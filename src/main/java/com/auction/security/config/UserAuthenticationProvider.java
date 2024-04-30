@@ -2,6 +2,7 @@ package com.auction.security.config;
 
 import com.auction.security.dtos.UserAuthDto;
 import com.auction.security.entites.User;
+import com.auction.exceptions.AppException;
 import com.auction.security.services.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -11,6 +12,7 @@ import com.auction.security.entites.Role;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -77,6 +79,16 @@ public class UserAuthenticationProvider {
         DecodedJWT decoded = verifier.verify(token);
 
         User user = userService.findByEmail(decoded.getSubject());
+
+        // Check user status
+        if (!user.getIsActive()) {
+            throw new AppException("User is not active", HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if user is blocked
+        if (user.getIsBlocked()) {
+            throw new AppException("User is blocked", HttpStatus.BAD_REQUEST);
+        }
 
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         for (Role role : user.getRoles()) {

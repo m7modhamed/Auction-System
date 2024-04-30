@@ -1,3 +1,3 @@
-package com.auction.security.dtos;
+package com.auction.Dtos;
 
 public record ErrorDto (String message) { }

@@ -41,8 +41,11 @@ public class AuthController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(){
         List<User> users=userRepository.findAll();
+
         return ResponseEntity.ok(users);
     }
+
+
     @PostMapping("/login")
     public ResponseEntity<UserAuthDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
         UserAuthDto userAuthDto = userService.login(credentialsDto);

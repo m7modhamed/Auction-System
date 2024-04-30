@@ -22,8 +22,6 @@ public class Auction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
 
     @Column(nullable = false)
     private boolean status = true;

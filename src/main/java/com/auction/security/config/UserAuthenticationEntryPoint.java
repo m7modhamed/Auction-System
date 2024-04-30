@@ -1,6 +1,6 @@
 package com.auction.security.config;
 
-import com.auction.security.dtos.ErrorDto;
+import com.auction.Dtos.ErrorDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +17,7 @@ import java.io.IOException;
 public class UserAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
 
     @Override
     public void commence(

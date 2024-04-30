@@ -6,7 +6,7 @@ import com.auction.Entity.Bid;
 import com.auction.Repository.BidRepository;
 import com.auction.Service.Interfaces.IBidService;
 import com.auction.security.entites.User;
-import com.auction.security.exceptions.AppException;
+import com.auction.exceptions.AppException;
 import com.auction.security.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

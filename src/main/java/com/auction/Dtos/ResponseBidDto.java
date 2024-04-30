@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ResponseBidDto {
-
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime bidTime;
 
