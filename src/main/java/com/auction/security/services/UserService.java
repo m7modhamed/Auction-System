@@ -16,8 +16,11 @@ import com.auction.security.utility.UrlUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +44,9 @@ public class UserService {
     private final ApplicationEventPublisher publisher;
     private final RegistrationCompleteEventListener eventListener;
 
+    private final AuthenticationManager authenticationManager;
 
-    public UserAuthDto login(CredentialsDto credentialsDto) {
+    /*public UserAuthDto login(CredentialsDto credentialsDto) {
         // Find user by email
         User user = userRepository.findByEmail(credentialsDto.login())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -64,9 +68,21 @@ public class UserService {
 
         // Return user DTO
         return userMapper.toUserDto(user);
+    }*/
+
+
+    public UserAuthDto login(CredentialsDto credentialsDto) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        credentialsDto.login(),
+                        credentialsDto.password()
+                )
+        );
+        var user = userRepository.findByEmail(credentialsDto.login())
+                .orElseThrow();
+        return userMapper.toUserDto(user);
+
     }
-
-
 
     public UserAuthDto register(SignUpDto userDto, HttpServletRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(userDto.email());
@@ -131,5 +147,9 @@ public class UserService {
 
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    public User saveOrUpdateUser(User user){
+        return userRepository.save(user);
     }
 }

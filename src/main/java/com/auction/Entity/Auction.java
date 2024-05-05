@@ -27,7 +27,6 @@ public class Auction {
     private boolean status = true;
 
     @Column(name = "begin_Date", nullable = false)
-    @CreationTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime beginDate;
 
@@ -47,13 +46,10 @@ public class Auction {
     private float commission;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
     @JsonManagedReference
     private User seller;
 
-    @OneToOne
-    @JoinColumn(name = "winner_id" , referencedColumnName = "id")
-    private User winner;
 
     @Column(nullable = false)
     private float minBid;
@@ -64,7 +60,7 @@ public class Auction {
     @Column(nullable = false)
     private float currentPrice;
 
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER, mappedBy = "auction")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "auction")
     @JsonManagedReference
     private List<Bid> bids;
 

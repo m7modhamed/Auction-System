@@ -1,12 +1,15 @@
 package com.auction.exceptions;
 
 import com.auction.Dtos.ErrorDto;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,22 +36,12 @@ public class RestExceptionHandler {
         ProblemDetail errorDetail=null;
 
         errorDetail=ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
-        errorDetail.setProperty("access-denied-reason",ex.getMessage());
+        errorDetail.setProperty("access-denied-reason","Authentication token has expired");
 
         return errorDetail;
     }
 
 
-    //SignatureVerificationException
-    @ExceptionHandler(value = { SignatureVerificationException.class })
-    @ResponseBody
-    public ProblemDetail handleSignatureVerificationException(SignatureVerificationException ex) {
-        ProblemDetail errorDetail=null;
-        errorDetail=ProblemDetail.forStatus(HttpStatusCode.valueOf(401));
-        errorDetail.setProperty("access-denied-reason","The Token's Signature resulted invalid");
-
-        return errorDetail;
-    }
 
     //data member validation handling
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -62,6 +55,27 @@ public class RestExceptionHandler {
         return map;
     }
 
+
+    @ExceptionHandler(value = { BadCredentialsException.class })
+    public ProblemDetail handleBadCredentialsException(BadCredentialsException ex) {
+        ProblemDetail errorDetail=null;
+
+        errorDetail=ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        errorDetail.setProperty("access-denied-reason","Invalid username or password");
+
+        return errorDetail;
+    }
+
+
+    @ExceptionHandler(value = { JWTVerificationException.class })
+    public ProblemDetail handleJWTVerificationException(JWTVerificationException ex) {
+        ProblemDetail errorDetail=null;
+
+        errorDetail=ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        errorDetail.setProperty("access-denied-reason","The Token Is Not Valid");
+
+        return errorDetail;
+    }
 
 
     @ExceptionHandler(value = { Exception.class })

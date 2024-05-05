@@ -18,46 +18,79 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BidService implements IBidService {
-    private final BidRepository repository;
+    private final BidRepository bidRepository;
     private final AuctionService auctionService;
     private final UserService userService;
+
     @Override
     public Auction makeBid(RequestBidDto requestBidDto, Long userId) {
-        Long auctionId=requestBidDto.getAuctionId();
-        double bidAmount=requestBidDto.getAmount();
+        Long auctionId = requestBidDto.getAuctionId();
+        double bidAmount = requestBidDto.getAmount();
 
-        Bid bid=new Bid();
+        Bid bid = new Bid();
 
         //check if the bidder exist or not && set bidder
-        Optional<User> bidder=userService.getUserById(userId);
-        if(bidder.isEmpty()){
-            throw new AppException("User Not Found",HttpStatus.NOT_FOUND);
+        Optional<User> bidder = userService.getUserById(userId);
+        if (bidder.isEmpty()) {
+            throw new AppException("User Not Found", HttpStatus.NOT_FOUND);
         }
+
         bid.setBidder(bidder.get());
 
         //check if the auction exist and active or not && set auction
-        Optional<Auction> auction= auctionService.getAuctionById(auctionId);
-        if(auction.isEmpty()){
+        Optional<Auction> auction = auctionService.getAuctionById(auctionId);
+        if (auction.isEmpty()) {
             throw new AppException("Auction Not Found", HttpStatus.NOT_FOUND);
         }
-        if(!auction.get().isStatus()){
-            throw new AppException("Auction Not Active",HttpStatus.BAD_REQUEST);
+        if (!auction.get().isStatus()) {
+            throw new AppException("Auction Not Active", HttpStatus.BAD_REQUEST);
         }
         bid.setAuction(auction.get());
 
-        if(Objects.equals(userId, auction.get().getSeller().getId())){
-            throw new AppException("You Are Auction Owner",HttpStatus.BAD_REQUEST);
+
+        if (Objects.equals(userId, auction.get().getSeller().getId())) {
+            throw new AppException("You Are Auction Owner", HttpStatus.BAD_REQUEST);
         }
 
         //check amount of bid > minimum bid allowed
-        if(bidAmount < auction.get().getMinBid()){
-            throw new AppException("Bid Amount Must Greater Than The Minimum Of Bid",HttpStatus.BAD_REQUEST);
+        if (bidAmount < auction.get().getMinBid()) {
+            throw new AppException("Bid Amount Must Greater Than The Minimum Of Bid", HttpStatus.BAD_REQUEST);
         }
         bid.setAmount(bidAmount);
 
         auction.get().getBids().add(bid);
-         repository.save(bid);
+        bidRepository.save(bid);
 
-         return bid.getAuction();
+        return bid.getAuction();
+    }
+
+    @Override
+    public void deleteBidById(Long bidId, Long userId) {
+        Optional<User> user = userService.getUserById(userId);
+        Optional<Bid> bid = bidRepository.findById(bidId);
+
+        if (user.isEmpty()) {
+            throw new AppException("User Not Found", HttpStatus.NOT_FOUND);
+        }
+        if (bid.isEmpty()) {
+            throw new AppException("Bid Not Found", HttpStatus.NOT_FOUND);
+        }
+
+
+        if(!bid.get().getBidder().equals(user.get())){
+            throw new AppException("You are not the owner of the bid.", HttpStatus.NOT_FOUND);
+
+        }
+
+
+
+        //charge the user wanted to delete her/his bid
+        /*
+         *
+         *
+         * */
+
+
+        bidRepository.deleteById(bidId);
     }
 }

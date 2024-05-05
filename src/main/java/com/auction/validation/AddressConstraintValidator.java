@@ -1,6 +1,7 @@
-package com.auction.validation.customAnnotations;
+package com.auction.validation;
 
 import com.auction.Enums.Address;
+import com.auction.validation.customAnnotations.ValidAddress;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

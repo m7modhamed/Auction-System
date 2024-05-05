@@ -30,7 +30,7 @@ public class Bid {
     @Column(nullable = false )
     private double amount;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auction_id", referencedColumnName = "id" ,nullable = false)
     @JsonBackReference
     private Auction auction;

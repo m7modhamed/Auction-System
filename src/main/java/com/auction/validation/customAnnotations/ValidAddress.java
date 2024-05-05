@@ -1,6 +1,6 @@
 package com.auction.validation.customAnnotations;
 
-import com.auction.validation.PasswordConstraintValidator;
+import com.auction.validation.AddressConstraintValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -40,6 +40,16 @@ public class BidController {
         return ResponseEntity.ok(responseAuctionDto);
     }
 
+    @DeleteMapping("delete/{bidId}")
+    public ResponseEntity<String> deleteBid(@PathVariable Long bidId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((User) authentication.getPrincipal()).getId();
+
+        bidService.deleteBidById(bidId,userId);
+
+        return ResponseEntity.ok("Bid with ID " + bidId + " deleted successfully.");
+    }
+
 
     public ResponseEntity<List<Bid>> getAllBids(@RequestParam int auctionId){
 

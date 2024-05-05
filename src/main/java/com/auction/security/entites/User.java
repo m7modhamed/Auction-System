@@ -7,10 +7,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "app_user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,15 +54,71 @@ public class User {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles=new HashSet<>();
+    private Set<Role> roles = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private PaymentAccount paymentAccount;
 
 
-    @OneToMany(mappedBy = "seller",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
     @JsonBackReference
-    private List<Auction> auctions;
+    private List<Auction> ownAuctions;
 
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "winner_id", referencedColumnName = "id")
+    @JsonBackReference
+    private List<Auction> WonAuctions;
+
+
+   /*
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_auctions_Participated",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "auction_id"))
+    @JsonBackReference
+    private List<Auction> auctionsParticipated;
+    */
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> list = new ArrayList<>();
+        for (Role role : this.getRoles()) {
+            list.add(new SimpleGrantedAuthority(role.getName()));
+        }
+
+        return list;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !this.getIsBlocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.getIsActive();
+    }
 }

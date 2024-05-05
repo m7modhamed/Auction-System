@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class ResponseAuctionDto {
 
+    private Long id;
 
     private boolean status;
 
@@ -26,7 +27,7 @@ public class ResponseAuctionDto {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime expireDate;
 
-    private ItemDto item;
+    private ResponseItemDto item;
 
     private Address location;
 

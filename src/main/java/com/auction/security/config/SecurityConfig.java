@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,7 +27,8 @@ public class SecurityConfig {
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver exceptionResolver;
-
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,8 +37,9 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(userAuthenticationProvider,exceptionResolver), BasicAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST,"/auction/**","/category/**", "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auction/all" , "/users").permitAll()
                         .requestMatchers("/moderator/**" ).hasRole("MODERATOR")
                         .requestMatchers(HttpMethod.GET,"/admin").hasRole("ADMIN")

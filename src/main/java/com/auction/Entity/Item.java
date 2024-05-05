@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +24,10 @@ public class Item {
 
     private String description;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> images;
+
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id" , referencedColumnName = "id")
+    private List<Image> images=new ArrayList<>();
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -33,7 +36,6 @@ public class Item {
     @JoinColumn(name = "category_id" , referencedColumnName = "id" ,nullable = false )
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
-
 
     @ElementCollection
     private Map<String,String> categoryAttributes;

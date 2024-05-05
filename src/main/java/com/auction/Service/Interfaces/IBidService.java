@@ -6,4 +6,6 @@ import com.auction.Entity.Bid;
 
 public interface IBidService {
     Auction makeBid(RequestBidDto requestBidDto, Long userId);
+
+    void deleteBidById(Long bidId, Long userId);
 }

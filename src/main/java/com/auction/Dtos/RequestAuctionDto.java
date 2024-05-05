@@ -25,7 +25,6 @@ public class RequestAuctionDto {
 
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
-    @Future
     private LocalDateTime expireDate;
 
     @Valid

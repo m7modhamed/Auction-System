@@ -2,10 +2,12 @@ package com.auction.Dtos;
 
 import com.auction.validation.customAnnotations.ValidItemStatus;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +15,14 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemDto {
+public class ResponseItemDto {
 
     @NotBlank
     private String name;
 
     private String description;
 
-    private List<MultipartFile> images=new ArrayList<>();
+    private byte[][] images;
 
     @ValidItemStatus
     private String itemStatus;
