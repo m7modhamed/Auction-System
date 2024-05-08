@@ -1,6 +1,5 @@
 package com.auction.Dtos;
 
-import com.auction.Entity.Bid;
 import com.auction.Enums.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,7 @@ public class ResponseAuctionDto {
 
     private Long id;
 
-    private boolean status;
+    private boolean active;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime beginDate;

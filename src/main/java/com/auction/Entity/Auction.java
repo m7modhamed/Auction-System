@@ -5,12 +5,9 @@ import com.auction.security.entites.User;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.beans.factory.annotation.Value;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,7 +21,7 @@ public class Auction {
 
 
     @Column(nullable = false)
-    private boolean status = true;
+    private boolean active = true;
 
     @Column(name = "begin_Date", nullable = false)
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
@@ -43,7 +40,7 @@ public class Auction {
     private Address location;
 
     @Column
-    private float commission;
+    private double commission;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)

@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,7 +44,7 @@ public class BidService implements IBidService {
         if (auction.isEmpty()) {
             throw new AppException("Auction Not Found", HttpStatus.NOT_FOUND);
         }
-        if (!auction.get().isStatus()) {
+        if (!auction.get().isActive()) {
             throw new AppException("Auction Not Active", HttpStatus.BAD_REQUEST);
         }
         bid.setAuction(auction.get());
@@ -55,6 +57,12 @@ public class BidService implements IBidService {
         //check amount of bid > minimum bid allowed
         if (bidAmount < auction.get().getMinBid()) {
             throw new AppException("Bid Amount Must Greater Than The Minimum Of Bid", HttpStatus.BAD_REQUEST);
+        }
+
+        //check amount of bid > Top bid
+        Bid topBid=getLatestBid(auction.get());
+        if (bidAmount < topBid.getAmount()) {
+            throw new AppException("Bid Amount Must Greater Than The Top Bid", HttpStatus.BAD_REQUEST);
         }
         bid.setAmount(bidAmount);
 
@@ -92,5 +100,17 @@ public class BidService implements IBidService {
 
 
         bidRepository.deleteById(bidId);
+    }
+
+    @Override
+    public Bid getLatestBid(Auction auction) {
+        List<Bid> bids= auction.getBids();
+
+        // Sort the bids by bid time in descending order
+        bids.sort(Comparator.comparing(Bid::getBidTime).reversed());
+
+        // Return the first bid in the sorted list, which is the latest bid
+        return bids.get(0);
+
     }
 }

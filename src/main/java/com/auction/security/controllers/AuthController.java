@@ -1,5 +1,6 @@
 package com.auction.security.controllers;
 
+import com.auction.Dtos.UserDto;
 import com.auction.security.config.UserAuthenticationProvider;
 import com.auction.security.dtos.CredentialsDto;
 import com.auction.security.dtos.SignUpDto;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +41,15 @@ public class AuthController {
     private String frontendBaseUrl;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers(){
+    public ResponseEntity<List<UserDto>> getUsers(){
         List<User> users=userRepository.findAll();
 
-        return ResponseEntity.ok(users);
+       List<UserDto> userDtos=new ArrayList<>();
+       for(User user:users){
+           userDtos.add(userMapper.toUserDto(user));
+       }
+
+        return ResponseEntity.ok(userDtos);
     }
 
 

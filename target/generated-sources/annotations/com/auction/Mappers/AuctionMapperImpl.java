@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-05-05T18:51:04+0300",
+    date = "2024-05-06T18:43:58+0300",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 20.0.2 (Oracle Corporation)"
 )
 @Component
@@ -60,7 +60,7 @@ public class AuctionMapperImpl implements AuctionMapper {
         ResponseAuctionDto.ResponseAuctionDtoBuilder responseAuctionDto = ResponseAuctionDto.builder();
 
         responseAuctionDto.id( auction.getId() );
-        responseAuctionDto.status( auction.isStatus() );
+        responseAuctionDto.active( auction.isActive() );
         responseAuctionDto.beginDate( auction.getBeginDate() );
         responseAuctionDto.expireDate( auction.getExpireDate() );
         responseAuctionDto.item( toResponseItemDto( auction.getItem() ) );

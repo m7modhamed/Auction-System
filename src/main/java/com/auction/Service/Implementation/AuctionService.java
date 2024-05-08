@@ -5,7 +5,6 @@ import com.auction.Entity.Auction;
 import com.auction.Entity.Category;
 import com.auction.Entity.Image;
 import com.auction.Mappers.AuctionMapper;
-import com.auction.Mappers.CategoryMapper;
 import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
@@ -31,7 +30,6 @@ public class AuctionService implements IAuctionService {
     private final AuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
     private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
     private final UserService userService;
 
     @Value("${spring.folder.images}")
@@ -47,6 +45,7 @@ public class AuctionService implements IAuctionService {
         if(requestAuctionDto.getExpireDate().isBefore(LocalDateTime.now().plusHours(1))){
             throw new AppException("The expiration time must be at least after 1 hour from now",HttpStatus.BAD_REQUEST);
         }
+
         Optional<Category> category=categoryRepository.findById(requestAuctionDto.getItem().getCategory().getId());
 
         if(category.isEmpty()){
@@ -114,6 +113,26 @@ public class AuctionService implements IAuctionService {
         auctionRepository.deleteById(id);
     }
 
+    @Override
+    public List<Auction> getMyAuctions(Long userId) {
+        Optional<User> user=userService.getUserById(userId);
+        if(user.isEmpty()){
+            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
+        }
+
+        return user.get().getOwnAuctions();
+    }
+
+    @Override
+    public List<Auction> getMyWonAuctions(Long userId) {
+        Optional<User> user=userService.getUserById(userId);
+        if(user.isEmpty()){
+            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
+        }
+
+        return user.get().getWonAuctions();
+    }
+
 
     private void deleteAuctionValidation(Optional<User> user, Optional<Auction> auction){
 
@@ -138,6 +157,12 @@ public class AuctionService implements IAuctionService {
 
         }
 
+    }
+
+    @Override
+    public List<Auction> getActiveAuctions() {
+
+        return auctionRepository.findByActiveTrue();
     }
 
 

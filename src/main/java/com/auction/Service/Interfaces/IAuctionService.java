@@ -17,4 +17,10 @@ public interface IAuctionService {
     Optional<Auction> getAuctionById(Long auctionId);
 
     void deleteAuctionById(Long id, Long userId);
+
+    List<Auction> getMyAuctions(Long userId);
+
+    List<Auction> getMyWonAuctions(Long userId);
+    List<Auction> getActiveAuctions();
+
 }

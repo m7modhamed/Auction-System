@@ -5,7 +5,6 @@ import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Mappers.AuctionMapper;
 import com.auction.Service.Interfaces.IAuctionService;
-import com.auction.Service.Interfaces.IBidService;
 import com.auction.security.entites.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +34,7 @@ public class AuctionController {
     public ResponseEntity<ResponseAuctionDto> createAuction(@RequestPart("requestAuction") @Valid RequestAuctionDto requestAuction,
                                                             @RequestPart("images") List<MultipartFile> images) throws IOException {
         // get user id
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((User) authentication.getPrincipal()).getId();
-
+        Long userId =getCurrentUserId();
         //creat auction
         Auction auction = auctionService.CreateAuction(requestAuction,images, userId);
 
@@ -50,9 +47,7 @@ public class AuctionController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<String> deleteAuction(@PathVariable Long id) {
         // get user id
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((User) authentication.getPrincipal()).getId();
-
+        Long userId =getCurrentUserId();
 
         auctionService.deleteAuctionById(id,userId);
 
@@ -60,8 +55,36 @@ public class AuctionController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ResponseAuctionDto>> getAuctions() {
-        List<Auction> auctions = auctionService.getAllAuctions();
+    public ResponseEntity<List<ResponseAuctionDto>> getActiveAuctions() {
+        List<Auction> auctions = auctionService.getActiveAuctions();
+
+        List<ResponseAuctionDto> responseAuction=new ArrayList<>();
+        for(Auction auction: auctions){
+            responseAuction.add(auctionMapper.toResponseAuctionDto(auction));
+        }
+        return ResponseEntity.ok(responseAuction);
+    }
+
+    @GetMapping("/myAuctions")
+    public ResponseEntity<List<ResponseAuctionDto>> getMyAuctions() {
+        Long userId =getCurrentUserId();
+
+
+        List<Auction> auctions = auctionService.getMyAuctions(userId);
+
+        List<ResponseAuctionDto> responseAuction=new ArrayList<>();
+        for(Auction auction: auctions){
+            responseAuction.add(auctionMapper.toResponseAuctionDto(auction));
+        }
+        return ResponseEntity.ok(responseAuction);
+    }
+
+    @GetMapping("/myWonAuctions")
+    public ResponseEntity<List<ResponseAuctionDto>> getWonAuctions() {
+        Long userId =getCurrentUserId();
+
+
+        List<Auction> auctions = auctionService.getMyWonAuctions(userId);
 
         List<ResponseAuctionDto> responseAuction=new ArrayList<>();
         for(Auction auction: auctions){
@@ -71,5 +94,9 @@ public class AuctionController {
     }
 
 
+    private Long getCurrentUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       return ((User) authentication.getPrincipal()).getId();
+    }
 
 }

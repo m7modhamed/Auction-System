@@ -16,7 +16,6 @@ import com.auction.security.utility.UrlUtil;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.CharBuffer;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
@@ -80,7 +78,7 @@ public class UserService {
         );
         var user = userRepository.findByEmail(credentialsDto.login())
                 .orElseThrow();
-        return userMapper.toUserDto(user);
+        return userMapper.UserAuthDto(user);
 
     }
 
@@ -105,7 +103,7 @@ public class UserService {
         }
         User savedUser = userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(savedUser, UrlUtil.getApplicationUrl(request)));
-        return userMapper.toUserDto(savedUser);
+        return userMapper.UserAuthDto(savedUser);
     }
 
     @Transactional(readOnly = true)
@@ -152,4 +150,6 @@ public class UserService {
     public User saveOrUpdateUser(User user){
         return userRepository.save(user);
     }
+
+
 }

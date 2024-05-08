@@ -72,15 +72,6 @@ public class User implements UserDetails {
     private List<Auction> WonAuctions;
 
 
-   /*
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_auctions_Participated",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "auction_id"))
-    @JsonBackReference
-    private List<Auction> auctionsParticipated;
-    */
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
