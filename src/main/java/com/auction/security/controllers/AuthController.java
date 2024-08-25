@@ -3,6 +3,7 @@ package com.auction.security.controllers;
 import com.auction.Dtos.UserDto;
 import com.auction.security.config.UserAuthenticationProvider;
 import com.auction.security.dtos.CredentialsDto;
+import com.auction.security.dtos.LoginResponse;
 import com.auction.security.dtos.SignUpDto;
 import com.auction.security.dtos.UserAuthDto;
 import com.auction.security.entites.Account;
@@ -16,6 +17,8 @@ import com.auction.security.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,7 @@ import java.util.Optional;
 @RestController
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AccountRepository accountRepository;
     private final UserService userService;
     private final UserAuthenticationProvider userAuthenticationProvider;
@@ -54,12 +58,17 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid CredentialsDto credentialsDto) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid CredentialsDto credentialsDto) {
         UserAuthDto userAuthDto = userService.login(credentialsDto);
-       // userAuthDto.setToken(userAuthenticationProvider.createToken(userAuthDto));
-        //return ResponseEntity.ok(userAuthDto);
 
-        return ResponseEntity.ok(userAuthenticationProvider.createToken(userAuthDto));
+        LoginResponse loginResponse=new LoginResponse();
+        loginResponse.setStatus("success");
+        loginResponse.setMessage("Login successful");
+
+        String token=userAuthenticationProvider.createToken(userAuthDto);
+
+        loginResponse.setToken(token);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/register")

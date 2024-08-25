@@ -1,6 +1,7 @@
 package com.auction.exceptions;
 
 import com.auction.Dtos.ErrorDto;
+import com.auction.security.dtos.LoginResponse;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,13 +58,40 @@ public class RestExceptionHandler {
 
 
     @ExceptionHandler(value = { BadCredentialsException.class })
-    public ProblemDetail handleBadCredentialsException(BadCredentialsException ex) {
-        ProblemDetail errorDetail=null;
+    public LoginResponse handleBadCredentialsException(BadCredentialsException ex) {
+       /* ProblemDetail errorDetail=null;
 
         errorDetail=ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         errorDetail.setProperty("access-denied-reason","Invalid username or password");
 
         return errorDetail;
+
+        */
+        LoginResponse loginResponse=new LoginResponse();
+        loginResponse.setStatus("error");
+        loginResponse.setMessage("Invalid credentials");
+
+        return loginResponse;
+    }
+
+
+    @ExceptionHandler(value = { DisabledException.class })
+    public LoginResponse handleException(DisabledException ex) {
+        LoginResponse loginResponse=new LoginResponse();
+        loginResponse.setStatus("inactive");
+        loginResponse.setMessage("Account is inactive");
+
+        return loginResponse;
+    }
+
+
+    @ExceptionHandler(value = { LockedException.class })
+    public LoginResponse handleException(LockedException ex) {
+        LoginResponse loginResponse=new LoginResponse();
+        loginResponse.setStatus("blocked");
+        loginResponse.setMessage("Account is blocked");
+
+        return loginResponse;
     }
 
 

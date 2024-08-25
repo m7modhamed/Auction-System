@@ -56,6 +56,7 @@ public class UserService {
 
 
     public UserAuthDto login(CredentialsDto credentialsDto) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         credentialsDto.login(),
