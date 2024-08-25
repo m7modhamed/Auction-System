@@ -16,4 +16,9 @@ public class imageService implements IimageService {
     public Optional<Image> getByName(String imagePath) {
         return imageRepository.findByName(imagePath);
     }
+
+    @Override
+    public Image save(Image image) {
+        return imageRepository.save(image);
+    }
 }

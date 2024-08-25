@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface IimageService {
     Optional<Image> getByName(String imagePath);
+
+    Image save(Image image);
 }

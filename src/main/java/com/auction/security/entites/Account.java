@@ -1,5 +1,6 @@
 package com.auction.security.entites;
 
+import com.auction.Entity.Image;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -44,6 +45,10 @@ public class Account implements UserDetails {
 
     @Column(nullable = false)
     private Boolean isBlocked;
+
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    @OneToOne
+    private Image image;
 
     @Column(nullable = false)
     @ManyToMany(fetch = FetchType.EAGER)

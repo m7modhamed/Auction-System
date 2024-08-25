@@ -20,6 +20,5 @@ public class Image {
 
     private String type;
 
-
     private String imageUrl;
 }

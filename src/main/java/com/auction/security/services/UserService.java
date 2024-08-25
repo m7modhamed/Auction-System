@@ -3,6 +3,7 @@ package com.auction.security.services;
 import com.auction.Entity.PaymentAccount;
 import com.auction.Repository.PaymentAccountRepository;
 import com.auction.Service.Interfaces.IPaymentService;
+import com.auction.Service.Interfaces.IimageService;
 import com.auction.security.dtos.UserAuthDto;
 import com.auction.security.entites.Account;
 import com.auction.security.entites.User;
@@ -51,7 +52,7 @@ public class UserService {
     private final RegistrationCompleteEventListener eventListener;
     private final PaymentAccountRepository paymentAccountRepository;
     private final AuthenticationManager authenticationManager;
-
+    private final IimageService imageService;
 
 
 
@@ -83,6 +84,7 @@ public class UserService {
         user.setEmail(userDto.email());
         user.setFirstName(userDto.firstName());
         user.setLastName(userDto.lastName());
+        user.setImage(userDto.image());
         /******/
         user.setMyPassword(passwordEncoder.encode(userDto.password()));
         user.setIsBlocked(false);
@@ -111,7 +113,7 @@ public class UserService {
         } catch (StripeException e) {
             throw new AppException("Failed to create stripe customer",HttpStatus.valueOf(e.getStatusCode()));
         }
-
+        imageService.save(userDto.image());
         User savedAccount = userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(savedAccount, UrlUtil.getApplicationUrl(request)));
         return userMapper.UserAuthDto(savedAccount);

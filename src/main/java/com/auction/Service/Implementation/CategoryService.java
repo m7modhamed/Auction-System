@@ -8,6 +8,8 @@ import com.auction.Service.Interfaces.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
@@ -20,5 +22,12 @@ public class CategoryService implements ICategoryService {
         Category category=categoryMapper.toCategory(categoryDto);
 
         return categoryRepository.save(category);
+    }
+
+    @Override
+    public List<CategoryDto> getAllCategories() {
+        List<Category> categories= categoryRepository.findAll();
+
+        return categoryMapper.toListCategories(categories);
     }
 }
