@@ -6,10 +6,7 @@ import com.auction.security.entites.Account;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
-import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.PaymentMethodAttachParams;
-import com.stripe.param.PaymentMethodCreateParams;
-import com.stripe.param.PaymentMethodListParams;
+import com.stripe.param.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -78,7 +75,7 @@ public class PaymentService implements IPaymentService {
 
 
     public String addCardWithoutDuplicate(String token, String customerId) throws StripeException {
-        Stripe.apiKey="sk_test_51PPBVn2KC2UBlHde0woMNEtoYoWO8vtKvR2BjujHTQkbb2jnGYWd1kfQ0z7cmVRuH0mGxozZNVt9goIUK6KMJh2d00xlPDDx6D";
+        Stripe.apiKey=stripeKey;
 
         // Retrieve existing payment methods
         PaymentMethodListParams listParams = PaymentMethodListParams.builder()
@@ -126,6 +123,40 @@ public class PaymentService implements IPaymentService {
         PaymentMethodCollection paymentMethods = PaymentMethod.list(params);
         return paymentMethods.getData();
     }
+
+
+
+    public PaymentIntent createPaymentIntent(String customerId, String paymentMethodId, Long amount, String currency, String description) throws StripeException {
+        Stripe.apiKey=stripeKey;
+
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount(amount) // Amount in the smallest currency unit (e.g., cents for USD)
+                .setCurrency(currency) // Currency code (e.g., "usd")
+                .setCustomer(customerId) // The customer ID in Stripe
+                .setPaymentMethod(paymentMethodId) // The payment method ID
+                .setDescription(description) // Description of the payment
+                .setConfirm(true) // Automatically confirm the payment intent
+                .setOffSession(true) // Optional: Required if you're charging the customer without their immediate interaction
+                .build();
+
+        return PaymentIntent.create(params); // This will create and confirm the payment intent
+    }
+
+
+    public Refund createRefund(String chargeId, Long amount) throws StripeException {
+        Stripe.apiKey = stripeKey;
+
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setCharge(chargeId) // The ID of the charge to be refunded
+                .setAmount(amount) // Amount to be refunded (optional, if not set, full amount is refunded)
+                .build();
+
+        return Refund.create(params); // Creates and returns the refund
+    }
+
+
+
+
 
 
 }

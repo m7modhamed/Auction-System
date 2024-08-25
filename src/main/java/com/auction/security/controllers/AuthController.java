@@ -54,17 +54,19 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<UserAuthDto> login(@RequestBody @Valid CredentialsDto credentialsDto) {
+    public ResponseEntity<String> login(@RequestBody @Valid CredentialsDto credentialsDto) {
         UserAuthDto userAuthDto = userService.login(credentialsDto);
-        userAuthDto.setToken(userAuthenticationProvider.createToken(userAuthDto));
-        return ResponseEntity.ok(userAuthDto);
+       // userAuthDto.setToken(userAuthenticationProvider.createToken(userAuthDto));
+        //return ResponseEntity.ok(userAuthDto);
+
+        return ResponseEntity.ok(userAuthenticationProvider.createToken(userAuthDto));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserAuthDto> register(@RequestBody @Valid SignUpDto user, HttpServletRequest request) {
+    public ResponseEntity<String> register(@RequestBody @Valid SignUpDto user, HttpServletRequest request) {
         UserAuthDto createdUser = userService.register(user,request);
-        createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
-        return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body(createdUser);
+       // createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
+        return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body("User registered successfully. Please check your email to verify your account.");
     }
 
     @GetMapping("/verifyEmail")

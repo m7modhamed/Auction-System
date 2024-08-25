@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -50,8 +51,12 @@ public class UserAuthenticationProvider {
                 .withExpiresAt(validity)
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
+                .withClaim("roles" , new ArrayList<>(user.getRoles().stream().map(Role::getName).collect(Collectors.toList())))
+                .withClaim("isActive" , user.isActive())
+                .withClaim("isBlocked" , user.isBlocked())
                 .sign(algorithm);
     }
+
 
     public Authentication validateToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);

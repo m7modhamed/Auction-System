@@ -1,5 +1,6 @@
 package com.auction.Dtos;
 
+import com.auction.Entity.Image;
 import com.auction.validation.customAnnotations.ValidItemStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -20,7 +21,7 @@ public class ItemDto {
 
     private String description;
 
-    private List<MultipartFile> images=new ArrayList<>();
+    private List<Image> images=new ArrayList<>();
 
     @ValidItemStatus
     private String itemStatus;

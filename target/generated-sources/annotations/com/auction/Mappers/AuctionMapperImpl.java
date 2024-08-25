@@ -15,18 +15,16 @@ import com.auction.Entity.Item;
 import com.auction.Enums.Address;
 import com.auction.Enums.ItemStatus;
 import com.auction.security.entites.User;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "٢٠٢٤-٠٨-٠٧T١٠:٤٦:٤٥+0300",
+    date = "٢٠٢٤-٠٨-١٧T١٨:٣٤:٤٧+0300",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.12 (Oracle Corporation)"
 )
 @Component
@@ -63,7 +61,7 @@ public class AuctionMapperImpl implements AuctionMapper {
         responseAuctionDto.active( auction.isActive() );
         responseAuctionDto.beginDate( auction.getBeginDate() );
         responseAuctionDto.expireDate( auction.getExpireDate() );
-        responseAuctionDto.item( toResponseItemDto( auction.getItem() ) );
+        responseAuctionDto.item( itemToResponseItemDto( auction.getItem() ) );
         responseAuctionDto.location( auction.getLocation() );
         responseAuctionDto.seller( userToUserDto( auction.getSeller() ) );
         responseAuctionDto.minBid( auction.getMinBid() );
@@ -72,59 +70,6 @@ public class AuctionMapperImpl implements AuctionMapper {
         responseAuctionDto.bids( bidListToResponseBidDtoList( auction.getBids() ) );
 
         return responseAuctionDto.build();
-    }
-
-    @Override
-    public ResponseItemDto toResponseItemDto(Item item) {
-        if ( item == null ) {
-            return null;
-        }
-
-        ResponseItemDto.ResponseItemDtoBuilder responseItemDto = ResponseItemDto.builder();
-
-        try {
-            responseItemDto.images( mapImagesToByteArrays( item.getImages() ) );
-        }
-        catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-        responseItemDto.name( item.getName() );
-        responseItemDto.description( item.getDescription() );
-        if ( item.getItemStatus() != null ) {
-            responseItemDto.itemStatus( item.getItemStatus().name() );
-        }
-        responseItemDto.category( categoryToCategoryDto( item.getCategory() ) );
-        Map<String, String> map = item.getCategoryAttributes();
-        if ( map != null ) {
-            responseItemDto.categoryAttributes( new LinkedHashMap<String, String>( map ) );
-        }
-
-        return responseItemDto.build();
-    }
-
-    protected Image multipartFileToImage(MultipartFile multipartFile) {
-        if ( multipartFile == null ) {
-            return null;
-        }
-
-        Image.ImageBuilder image = Image.builder();
-
-        image.name( multipartFile.getName() );
-
-        return image.build();
-    }
-
-    protected List<Image> multipartFileListToImageList(List<MultipartFile> list) {
-        if ( list == null ) {
-            return null;
-        }
-
-        List<Image> list1 = new ArrayList<Image>( list.size() );
-        for ( MultipartFile multipartFile : list ) {
-            list1.add( multipartFileToImage( multipartFile ) );
-        }
-
-        return list1;
     }
 
     protected Category categoryDtoToCategory(CategoryDto categoryDto) {
@@ -154,7 +99,10 @@ public class AuctionMapperImpl implements AuctionMapper {
 
         item.setName( itemDto.getName() );
         item.setDescription( itemDto.getDescription() );
-        item.setImages( multipartFileListToImageList( itemDto.getImages() ) );
+        List<Image> list = itemDto.getImages();
+        if ( list != null ) {
+            item.setImages( new ArrayList<Image>( list ) );
+        }
         if ( itemDto.getItemStatus() != null ) {
             item.setItemStatus( Enum.valueOf( ItemStatus.class, itemDto.getItemStatus() ) );
         }
@@ -165,6 +113,49 @@ public class AuctionMapperImpl implements AuctionMapper {
         }
 
         return item;
+    }
+
+    protected CategoryDto categoryToCategoryDto(Category category) {
+        if ( category == null ) {
+            return null;
+        }
+
+        CategoryDto.CategoryDtoBuilder categoryDto = CategoryDto.builder();
+
+        categoryDto.id( category.getId() );
+        categoryDto.name( category.getName() );
+        categoryDto.description( category.getDescription() );
+        List<String> list = category.getAttributes();
+        if ( list != null ) {
+            categoryDto.attributes( new ArrayList<String>( list ) );
+        }
+
+        return categoryDto.build();
+    }
+
+    protected ResponseItemDto itemToResponseItemDto(Item item) {
+        if ( item == null ) {
+            return null;
+        }
+
+        ResponseItemDto.ResponseItemDtoBuilder responseItemDto = ResponseItemDto.builder();
+
+        responseItemDto.name( item.getName() );
+        responseItemDto.description( item.getDescription() );
+        List<Image> list = item.getImages();
+        if ( list != null ) {
+            responseItemDto.images( new ArrayList<Image>( list ) );
+        }
+        if ( item.getItemStatus() != null ) {
+            responseItemDto.itemStatus( item.getItemStatus().name() );
+        }
+        responseItemDto.category( categoryToCategoryDto( item.getCategory() ) );
+        Map<String, String> map = item.getCategoryAttributes();
+        if ( map != null ) {
+            responseItemDto.categoryAttributes( new LinkedHashMap<String, String>( map ) );
+        }
+
+        return responseItemDto.build();
     }
 
     protected UserDto userToUserDto(User user) {
@@ -207,23 +198,5 @@ public class AuctionMapperImpl implements AuctionMapper {
         }
 
         return list1;
-    }
-
-    protected CategoryDto categoryToCategoryDto(Category category) {
-        if ( category == null ) {
-            return null;
-        }
-
-        CategoryDto.CategoryDtoBuilder categoryDto = CategoryDto.builder();
-
-        categoryDto.id( category.getId() );
-        categoryDto.name( category.getName() );
-        categoryDto.description( category.getDescription() );
-        List<String> list = category.getAttributes();
-        if ( list != null ) {
-            categoryDto.attributes( new ArrayList<String>( list ) );
-        }
-
-        return categoryDto.build();
     }
 }

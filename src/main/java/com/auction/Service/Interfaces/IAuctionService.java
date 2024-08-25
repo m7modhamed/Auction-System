@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IAuctionService {
 
-    Auction CreateAuction(RequestAuctionDto requestAuctionDto, List<MultipartFile> images,Long userId) throws IOException;
+    Auction CreateAuction(RequestAuctionDto requestAuctionDto,Long userId);
 
     List<Auction> getAllAuctions();
 

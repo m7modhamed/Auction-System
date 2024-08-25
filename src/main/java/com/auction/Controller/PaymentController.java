@@ -1,11 +1,12 @@
 package com.auction.Controller;
 
+import com.auction.Dtos.ChargeRequest;
+import com.auction.Dtos.ChargeResponse;
+import com.auction.Dtos.RefundRequest;
 import com.auction.Service.Interfaces.IPaymentService;
-import com.auction.security.entites.Account;
 import com.auction.security.entites.User;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.PaymentMethod;
+import com.stripe.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/stripe") // Base URL for this controller
 public class PaymentController {
 
     private final IPaymentService paymentService;
 
 
-    @PostMapping("/api/stripe/add-card")
+    @PostMapping("/add-card")
     public ResponseEntity<String> addCard(@RequestParam String token) {
         User user=getCurrentUserId();
 
@@ -34,7 +36,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/api/stripe/customer-cards")
+    @GetMapping("/customer-cards")
     public ResponseEntity<?> getCustomerPaymentMethods() {
         try {
             String customerId=getCurrentUserId().getPaymentAccount().getCustomerId();
@@ -49,9 +51,50 @@ public class PaymentController {
     }
 
 
+    @PostMapping("/charge")
+    public ResponseEntity<ChargeResponse> createCharge(@RequestBody ChargeRequest chargeRequest) throws StripeException {
+        PaymentIntent paymentIntent=paymentService.createPaymentIntent(
+                getCurrentUserId().getPaymentAccount().getCustomerId(),
+                chargeRequest.getPaymentMethodId(),
+                chargeRequest.getAmount(),
+                chargeRequest.getCurrency(),
+                chargeRequest.getDescription()
+        );
+
+        // Map the fields you need to your DTO
+        ChargeResponse response = new ChargeResponse();
+        response.setId(paymentIntent.getId());
+        response.setAmount(paymentIntent.getAmount());
+        response.setCurrency(paymentIntent.getCurrency());
+        response.setStatus(paymentIntent.getStatus());
+        response.setDescription(paymentIntent.getDescription());
+
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/refund")
+    public ResponseEntity<Refund> createRefund(@RequestBody RefundRequest refundRequest) {
+        try {
+            Refund refund = paymentService.createRefund(
+                    refundRequest.getChargeId(),
+                    refundRequest.getAmount()
+            );
+            return ResponseEntity.ok(refund);
+        } catch (StripeException e) {
+            return ResponseEntity.status(500).body(null); // Adjust error handling as needed
+        }
+    }
+
+
+
     private User getCurrentUserId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((User) authentication.getPrincipal());
     }
+
+
+
+
 
 }

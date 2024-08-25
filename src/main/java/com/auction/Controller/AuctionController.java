@@ -8,14 +8,10 @@ import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.security.entites.Account;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +26,12 @@ public class AuctionController {
     private final IAuctionService auctionService;
 
 
-    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ResponseAuctionDto> createAuction(@RequestPart("requestAuction") @Valid RequestAuctionDto requestAuction,
-                                                            @RequestPart("images") List<MultipartFile> images) throws IOException {
+    @PostMapping("/create")
+    public ResponseEntity<ResponseAuctionDto> createAuction(@RequestBody @Valid RequestAuctionDto requestAuction) {
         // get user id
         Long userId =getCurrentUserId();
         //creat auction
-        Auction auction = auctionService.CreateAuction(requestAuction,images, userId);
+        Auction auction = auctionService.CreateAuction(requestAuction, userId);
 
         ResponseAuctionDto responseAuctionDto = auctionMapper.toResponseAuctionDto(auction);
 

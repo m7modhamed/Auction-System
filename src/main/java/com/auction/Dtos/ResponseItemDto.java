@@ -1,5 +1,6 @@
 package com.auction.Dtos;
 
+import com.auction.Entity.Image;
 import com.auction.validation.customAnnotations.ValidItemStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class ResponseItemDto {
 
     private String description;
 
-    private byte[][] images;
+    private List<Image> images;
 
     @ValidItemStatus
     private String itemStatus;

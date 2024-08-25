@@ -8,7 +8,6 @@ import com.auction.Mappers.AuctionMapper;
 import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
-import com.auction.security.entites.Account;
 import com.auction.exceptions.AppException;
 import com.auction.security.entites.User;
 import com.auction.security.services.UserService;
@@ -16,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +33,9 @@ public class AuctionService implements IAuctionService {
     private String FOLDER_PATH;
 
     private static final int DELETION_TIME_LIMIT =20;
+
     @Override
-    public Auction CreateAuction(RequestAuctionDto requestAuctionDto,List<MultipartFile> images,Long userId) {
+    public Auction CreateAuction(RequestAuctionDto requestAuctionDto,Long userId) {
         Auction newAuction=auctionMapper.toAuction(requestAuctionDto);
 
         newAuction.setBeginDate(LocalDateTime.now());
@@ -53,34 +50,6 @@ public class AuctionService implements IAuctionService {
             throw new AppException("Category not found", HttpStatus.NOT_FOUND);
         }
         newAuction.getItem().setCategory(category.get());
-
-
-        //handle upload images
-
-        if(images == null || images.isEmpty() || images.size() > 5) {
-            throw new AppException("The number of images must be between 1 and 5.", HttpStatus.BAD_REQUEST);
-        }
-        for (MultipartFile file : images) {
-            //get full filePath
-            String filePath = FOLDER_PATH + file.getOriginalFilename();
-
-            // Save the image file to the file system
-            try {
-                file.transferTo(new File(filePath));
-            } catch (IOException e) {
-                throw new AppException("Failed to save images", HttpStatus.BAD_REQUEST);
-            }
-
-            // set image path to the new auction object to save later in database
-            Image image= Image.builder()
-                    .name(file.getOriginalFilename())
-                    .type(file.getContentType())
-                    .imagePath(filePath)
-                    .build();
-
-            newAuction.getItem().getImages().add(image);
-        }
-
 
         Optional<User> user= userService.getUserById(userId);
         if(user.isEmpty()){

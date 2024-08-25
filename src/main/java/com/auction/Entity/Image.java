@@ -2,6 +2,7 @@ package com.auction.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 @Entity
 @Data
@@ -19,5 +20,6 @@ public class Image {
 
     private String type;
 
-    private String imagePath;
+
+    private String imageUrl;
 }
