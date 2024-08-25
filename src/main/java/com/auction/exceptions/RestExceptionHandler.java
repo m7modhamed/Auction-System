@@ -58,7 +58,7 @@ public class RestExceptionHandler {
 
 
     @ExceptionHandler(value = { BadCredentialsException.class })
-    public LoginResponse handleBadCredentialsException(BadCredentialsException ex) {
+    public ResponseEntity<LoginResponse> handleBadCredentialsException(BadCredentialsException ex) {
        /* ProblemDetail errorDetail=null;
 
         errorDetail=ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
@@ -71,27 +71,27 @@ public class RestExceptionHandler {
         loginResponse.setStatus("error");
         loginResponse.setMessage("Invalid credentials");
 
-        return loginResponse;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
     }
 
 
     @ExceptionHandler(value = { DisabledException.class })
-    public LoginResponse handleException(DisabledException ex) {
+    public ResponseEntity<LoginResponse> handleException(DisabledException ex) {
         LoginResponse loginResponse=new LoginResponse();
         loginResponse.setStatus("inactive");
         loginResponse.setMessage("Account is inactive");
 
-        return loginResponse;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
     }
 
 
     @ExceptionHandler(value = { LockedException.class })
-    public LoginResponse handleException(LockedException ex) {
+    public ResponseEntity<LoginResponse> handleException(LockedException ex) {
         LoginResponse loginResponse=new LoginResponse();
         loginResponse.setStatus("blocked");
         loginResponse.setMessage("Account is blocked");
 
-        return loginResponse;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginResponse);
     }
 
 
