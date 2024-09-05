@@ -23,4 +23,6 @@ public interface IPaymentService {
 
     public Refund createRefund(String chargeId, Long amount) throws StripeException;
 
+    public ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception;
+
     }

@@ -18,7 +18,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-
 @RequestMapping("/auction")
 public class AuctionController {
 

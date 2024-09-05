@@ -155,8 +155,37 @@ public class PaymentService implements IPaymentService {
     }
 
 
+   /* public ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("payment_method", paymentMethodId);
+        params.put("limit", 100); // Adjust the limit as needed
+
+        return Charge.list(params);
+    }*/
 
 
+    // List charges for a specific PaymentMethod (via customer and payment intent)
+    public ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception {
+        Stripe.apiKey = stripeKey;
 
+        // Retrieve the PaymentMethod
+        PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
 
+        // Check if the PaymentMethod is associated with a Customer
+        if (paymentMethod.getCustomer() != null) {
+            String customerId = paymentMethod.getCustomer();
+
+            // List all charges associated with the customer
+            Map<String, Object> chargeParams = new HashMap<>();
+            chargeParams.put("customer", customerId);
+            chargeParams.put("limit", 100); // Adjust the limit as needed
+
+            return Charge.list(chargeParams);
+        } else {
+            throw new IllegalArgumentException("No customer associated with this PaymentMethod.");
+        }
+    }
 }
+
+
+

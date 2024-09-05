@@ -86,6 +86,15 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("listCharges/{methodId}")
+    public ChargeCollection getAllCharges(@PathVariable String methodId){
+        try {
+            return paymentService.listChargesForPaymentMethod(methodId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
     private User getCurrentUserId(){

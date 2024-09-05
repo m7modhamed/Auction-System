@@ -1,6 +1,5 @@
 package com.auction.security.token;
 
-import com.auction.security.entites.Account;
 import com.auction.security.entites.User;
 import com.auction.security.utility.TokenExpirationTime;
 import jakarta.persistence.*;
