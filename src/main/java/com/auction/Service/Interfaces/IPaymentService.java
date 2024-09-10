@@ -1,6 +1,6 @@
 package com.auction.Service.Interfaces;
 
-import com.auction.security.entites.Account;
+import com.auction.Entity.Account;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 

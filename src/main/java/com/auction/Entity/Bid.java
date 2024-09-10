@@ -1,7 +1,5 @@
 package com.auction.Entity;
 
-import com.auction.security.entites.Account;
-import com.auction.security.entites.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

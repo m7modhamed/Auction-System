@@ -7,7 +7,7 @@ import com.auction.Entity.Bid;
 import com.auction.Mappers.AuctionMapper;
 import com.auction.Mappers.BidMapper;
 import com.auction.Service.Interfaces.IBidService;
-import com.auction.security.entites.Account;
+import com.auction.Entity.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

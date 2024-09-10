@@ -5,7 +5,7 @@ import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Mappers.AuctionMapper;
 import com.auction.Service.Interfaces.IAuctionService;
-import com.auction.security.entites.Account;
+import com.auction.Entity.Account;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

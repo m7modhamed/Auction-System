@@ -1,8 +1,6 @@
 package com.auction.Entity;
 
 import com.auction.Enums.Address;
-import com.auction.security.entites.Account;
-import com.auction.security.entites.User;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;

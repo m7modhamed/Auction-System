@@ -3,16 +3,13 @@ package com.auction.Service.Implementation;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.Category;
-import com.auction.Entity.Image;
 import com.auction.Mappers.AuctionMapper;
 import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.exceptions.AppException;
-import com.auction.security.entites.User;
-import com.auction.security.services.UserService;
+import com.auction.Entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +24,7 @@ public class AuctionService implements IAuctionService {
     private final AuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
     private final CategoryRepository categoryRepository;
-    private final UserService userService;
-
-    @Value("${spring.folder.images}")
-    private String FOLDER_PATH;
+    private final AuthService authService;
 
     private static final int DELETION_TIME_LIMIT =20;
 
@@ -51,7 +45,7 @@ public class AuctionService implements IAuctionService {
         }
         newAuction.getItem().setCategory(category.get());
 
-        Optional<User> user= userService.getUserById(userId);
+        Optional<User> user= authService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("User not found", HttpStatus.NOT_FOUND);
         }
@@ -82,7 +76,7 @@ public class AuctionService implements IAuctionService {
     @Override
     public void deleteAuctionById(Long id, Long userId) {
         Optional<Auction> auction=auctionRepository.findById(id);
-        Optional<User> user=userService.getUserById(userId);
+        Optional<User> user= authService.getUserById(userId);
 
         deleteAuctionValidation(user,auction);
 
@@ -92,7 +86,7 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public List<Auction> getMyAuctions(Long userId) {
-        Optional<User> user=userService.getUserById(userId);
+        Optional<User> user= authService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
         }
@@ -102,7 +96,7 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public List<Auction> getMyWonAuctions(Long userId) {
-        Optional<User> user=userService.getUserById(userId);
+        Optional<User> user= authService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
         }

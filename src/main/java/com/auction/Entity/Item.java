@@ -1,8 +1,6 @@
 package com.auction.Entity;
 
 import com.auction.Enums.ItemStatus;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 

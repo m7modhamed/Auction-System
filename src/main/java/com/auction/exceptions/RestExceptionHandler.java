@@ -1,7 +1,7 @@
 package com.auction.exceptions;
 
 import com.auction.Dtos.ErrorDto;
-import com.auction.security.dtos.LoginResponse;
+import com.auction.Dtos.LoginResponse;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;

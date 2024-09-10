@@ -5,10 +5,8 @@ import com.auction.Entity.Auction;
 import com.auction.Entity.Bid;
 import com.auction.Repository.BidRepository;
 import com.auction.Service.Interfaces.IBidService;
-import com.auction.security.entites.Account;
 import com.auction.exceptions.AppException;
-import com.auction.security.entites.User;
-import com.auction.security.services.UserService;
+import com.auction.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ import java.util.Optional;
 public class BidService implements IBidService {
     private final BidRepository bidRepository;
     private final AuctionService auctionService;
-    private final UserService userService;
+    private final AuthService authService;
 
     @Override
     public Auction makeBid(RequestBidDto requestBidDto, Long userId) {
@@ -33,7 +31,7 @@ public class BidService implements IBidService {
         Bid bid = new Bid();
 
         //check if the bidder exist or not && set bidder
-        Optional<User> bidder = userService.getUserById(userId);
+        Optional<User> bidder = authService.getUserById(userId);
         if (bidder.isEmpty()) {
             throw new AppException("User Not Found", HttpStatus.NOT_FOUND);
         }
@@ -75,7 +73,7 @@ public class BidService implements IBidService {
 
     @Override
     public void deleteBidById(Long bidId, Long userId) {
-        Optional<User> user = userService.getUserById(userId);
+        Optional<User> user = authService.getUserById(userId);
         Optional<Bid> bid = bidRepository.findById(bidId);
 
         if (user.isEmpty()) {

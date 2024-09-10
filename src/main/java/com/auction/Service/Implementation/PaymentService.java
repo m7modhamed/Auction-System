@@ -2,7 +2,7 @@ package com.auction.Service.Implementation;
 
 
 import com.auction.Service.Interfaces.IPaymentService;
-import com.auction.security.entites.Account;
+import com.auction.Entity.Account;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
@@ -44,34 +44,6 @@ public class PaymentService implements IPaymentService {
 
     }
 
-
-    public PaymentSource addCard(String customerId) throws StripeException {
-        Stripe.apiKey=stripeKey;
-
-        // Retrieve the customer object from Stripe with sources expanded
-        Customer customer = Customer.retrieve(customerId);
-
-        // Card parameters
-        Map<String, Object> cardParams = new HashMap<>();
-        cardParams.put("number", "4242424242424242");
-        cardParams.put("exp_month", 12);
-        cardParams.put("exp_year", 2029);
-        cardParams.put("cvc", "222");
-
-        // Create token parameters
-        Map<String, Object> tokenParams = new HashMap<>();
-        tokenParams.put("card", cardParams);
-
-        // Create token
-        Token token = Token.create(tokenParams);
-
-        // Create source parameters
-        Map<String, Object> sourceParams = new HashMap<>();
-        sourceParams.put("source", token.getId());
-
-        // Add card to customer
-        return customer.getSources().create(sourceParams);
-    }
 
 
     public String addCardWithoutDuplicate(String token, String customerId) throws StripeException {
@@ -155,13 +127,7 @@ public class PaymentService implements IPaymentService {
     }
 
 
-   /* public ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("payment_method", paymentMethodId);
-        params.put("limit", 100); // Adjust the limit as needed
 
-        return Charge.list(params);
-    }*/
 
 
     // List charges for a specific PaymentMethod (via customer and payment intent)

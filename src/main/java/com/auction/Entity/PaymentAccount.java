@@ -1,13 +1,8 @@
 package com.auction.Entity;
 
-import com.auction.Enums.PaymentMethod;
-import com.auction.security.entites.Account;
-import com.auction.security.entites.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.List;
 
 @Entity
 @Data

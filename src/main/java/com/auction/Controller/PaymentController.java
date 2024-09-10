@@ -4,7 +4,7 @@ import com.auction.Dtos.ChargeRequest;
 import com.auction.Dtos.ChargeResponse;
 import com.auction.Dtos.RefundRequest;
 import com.auction.Service.Interfaces.IPaymentService;
-import com.auction.security.entites.User;
+import com.auction.Entity.User;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import lombok.RequiredArgsConstructor;
