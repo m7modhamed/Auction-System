@@ -4,8 +4,6 @@ import com.auction.Dtos.SignUpRequestDto;
 import com.auction.Entity.PaymentAccount;
 import com.auction.Mappers.IUserMapper;
 import com.auction.Service.Interfaces.IPaymentService;
-import com.auction.Service.Interfaces.IimageService;
-import com.auction.Dtos.UserAuthDto;
 import com.auction.Entity.Account;
 import com.auction.Entity.User;
 import com.auction.Service.Interfaces.IpasswordResetTokenService;
@@ -27,7 +25,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +41,11 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final IPaymentService paymentService;
-    private final PasswordEncoder passwordEncoder;
     private final IpasswordResetTokenService passwordResetTokenService;
     private final IUserMapper userMapper;
     private final ApplicationEventPublisher publisher;
     private final RegistrationCompleteEventListener eventListener;
     private final AuthenticationManager authenticationManager;
-    private final IimageService imageService;
 
 
 
@@ -67,7 +62,7 @@ public class AuthService {
     }
 
     @Transactional
-    public UserAuthDto register(SignUpRequestDto signUpRequestDto, HttpServletRequest request) {
+    public Account register(SignUpRequestDto signUpRequestDto, HttpServletRequest request) {
         Optional<Account> optionalAccount = accountRepository.findByEmail(signUpRequestDto.email());
 
         if (optionalAccount.isPresent()) {
@@ -75,15 +70,7 @@ public class AuthService {
         }
 
         User user = userMapper.signUpToUser(signUpRequestDto);
-        // these lines for testing
-        user.setEmail(signUpRequestDto.email());
-        user.setFirstName(signUpRequestDto.firstName());
-        user.setLastName(signUpRequestDto.lastName());
-        user.setImage(signUpRequestDto.image());
 
-        user.setMyPassword(passwordEncoder.encode(signUpRequestDto.password()));
-        user.setIsBlocked(false);
-        user.setIsActive(false);
         user.setRoles(new HashSet<>());
         Optional<Role> role=roleRepository.findByName("ROLE_USER");
         if(role.isPresent()) {
@@ -108,10 +95,10 @@ public class AuthService {
         } catch (StripeException e) {
             throw new AppException("Failed to create stripe customer",HttpStatus.valueOf(e.getStatusCode()));
         }
-        imageService.save(signUpRequestDto.image());
+
         User savedAccount = userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(savedAccount, UrlUtil.getApplicationUrl(request)));
-        return userMapper.UserAuthDto(savedAccount);
+        return savedAccount;
     }
 
     @Transactional(readOnly = true)

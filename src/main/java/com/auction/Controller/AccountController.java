@@ -57,9 +57,9 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid SignUpRequestDto signUpRequestDto, HttpServletRequest request) {
-        UserAuthDto createdUser = authService.register(signUpRequestDto,request);
-       // createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
-        return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body("User registered successfully. Please check your email to verify your account.");
+        Account createdAccount = authService.register(signUpRequestDto,request);
+
+        return ResponseEntity.created(URI.create("/users/" + createdAccount.getId())).body("User registered successfully. Please check your email to verify your account.");
     }
 
     @GetMapping("/verifyEmail")
