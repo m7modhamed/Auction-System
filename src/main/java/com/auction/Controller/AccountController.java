@@ -1,14 +1,11 @@
 package com.auction.Controller;
 
-import com.auction.Dtos.UserDto;
+import com.auction.Dtos.*;
+import com.auction.Service.Interfaces.IAccountService;
 import com.auction.security.config.UserAuthenticationProvider;
-import com.auction.Dtos.CredentialsDto;
-import com.auction.Dtos.LoginResponse;
-import com.auction.Dtos.SignUpDto;
-import com.auction.Dtos.UserAuthDto;
 import com.auction.Entity.Account;
 import com.auction.event.listener.RegistrationCompleteEventListener;
-import com.auction.Mappers.UserMapper;
+import com.auction.Mappers.IUserMapper;
 import com.auction.Service.Interfaces.IpasswordResetTokenService;
 import com.auction.Repository.AccountRepository;
 import com.auction.Service.Implementation.AuthService;
@@ -19,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,49 +27,37 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-public class AuthController {
+public class AccountController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger log = LoggerFactory.getLogger(AccountController.class);
     private final AccountRepository accountRepository;
+    private final IAccountService accountService;
     private final AuthService authService;
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final VerificationTokenService tokenService;
-    private final UserMapper userMapper;
+    private final IUserMapper userMapper;
     private final RegistrationCompleteEventListener eventListener;
     private final IpasswordResetTokenService passwordResetTokenService;
-    @Value("${frontend.base-url}")
-    private String frontendBaseUrl;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getUsers(){
-        List<Account> accounts =accountRepository.findAll();
-
-       List<UserDto> userDtos=new ArrayList<>();
-       for(Account account : accounts){
-           userDtos.add(userMapper.toUserDto(account));
-       }
-
-        return ResponseEntity.ok(userDtos);
-    }
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid CredentialsDto credentialsDto) {
-        UserAuthDto userAuthDto = authService.login(credentialsDto);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+        Account account = authService.login(loginRequestDto);
 
-        LoginResponse loginResponse=new LoginResponse();
-        loginResponse.setStatus("success");
-        loginResponse.setMessage("Login successful");
+        LoginResponseDto loginResponseDto =new LoginResponseDto();
+        loginResponseDto.setStatus("success");
+        loginResponseDto.setMessage("Login successful");
 
-        String token=userAuthenticationProvider.createToken(userAuthDto);
+        String token=userAuthenticationProvider.createToken(account);
 
-        loginResponse.setToken(token);
-        return ResponseEntity.ok(loginResponse);
+        loginResponseDto.setToken(token);
+        return ResponseEntity.ok(loginResponseDto);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid SignUpDto user, HttpServletRequest request) {
-        UserAuthDto createdUser = authService.register(user,request);
+    public ResponseEntity<String> register(@RequestBody @Valid SignUpRequestDto signUpRequestDto, HttpServletRequest request) {
+        UserAuthDto createdUser = authService.register(signUpRequestDto,request);
        // createdUser.setToken(userAuthenticationProvider.createToken(createdUser));
         return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).body("User registered successfully. Please check your email to verify your account.");
     }
@@ -107,6 +91,20 @@ public class AuthController {
         return ResponseEntity.status(status).body(resetResult);
     }
     
+
+    @PutMapping("/update-account")
+    public ResponseEntity<Account> updateAccountInfo(@RequestBody UpdateAccountDto updateAccountDto){
+
+        accountService.updateAccount(updateAccountDto);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+
+
+
+
 
 
 }

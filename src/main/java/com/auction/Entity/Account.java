@@ -46,7 +46,7 @@ public class Account implements UserDetails {
     private Boolean isBlocked;
 
     @JoinColumn(name = "image_id", referencedColumnName = "id")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Image image;
 
     @Column(nullable = false)

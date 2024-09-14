@@ -3,7 +3,7 @@ package com.auction.Service.Implementation;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.Category;
-import com.auction.Mappers.AuctionMapper;
+import com.auction.Mappers.IAuctionMapper;
 import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuctionService implements IAuctionService {
 
-    private final AuctionMapper auctionMapper;
+    private final IAuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
     private final CategoryRepository categoryRepository;
     private final AuthService authService;

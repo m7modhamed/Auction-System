@@ -1,7 +1,7 @@
 package com.auction.exceptions;
 
 import com.auction.Dtos.ErrorDto;
-import com.auction.Dtos.LoginResponse;
+import com.auction.Dtos.LoginResponseDto;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.http.HttpStatus;
@@ -58,7 +58,7 @@ public class RestExceptionHandler {
 
 
     @ExceptionHandler(value = { BadCredentialsException.class })
-    public ResponseEntity<LoginResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    public ResponseEntity<LoginResponseDto> handleBadCredentialsException(BadCredentialsException ex) {
        /* ProblemDetail errorDetail=null;
 
         errorDetail=ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
@@ -67,31 +67,31 @@ public class RestExceptionHandler {
         return errorDetail;
 
         */
-        LoginResponse loginResponse=new LoginResponse();
-        loginResponse.setStatus("error");
-        loginResponse.setMessage("Invalid credentials");
+        LoginResponseDto loginResponseDto =new LoginResponseDto();
+        loginResponseDto.setStatus("error");
+        loginResponseDto.setMessage("Invalid credentials");
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponseDto);
     }
 
 
     @ExceptionHandler(value = { DisabledException.class })
-    public ResponseEntity<LoginResponse> handleException(DisabledException ex) {
-        LoginResponse loginResponse=new LoginResponse();
-        loginResponse.setStatus("inactive");
-        loginResponse.setMessage("Account is inactive");
+    public ResponseEntity<LoginResponseDto> handleException(DisabledException ex) {
+        LoginResponseDto loginResponseDto =new LoginResponseDto();
+        loginResponseDto.setStatus("inactive");
+        loginResponseDto.setMessage("Account is inactive");
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponseDto);
     }
 
 
     @ExceptionHandler(value = { LockedException.class })
-    public ResponseEntity<LoginResponse> handleException(LockedException ex) {
-        LoginResponse loginResponse=new LoginResponse();
-        loginResponse.setStatus("blocked");
-        loginResponse.setMessage("Account is blocked");
+    public ResponseEntity<LoginResponseDto> handleException(LockedException ex) {
+        LoginResponseDto loginResponseDto =new LoginResponseDto();
+        loginResponseDto.setStatus("blocked");
+        loginResponseDto.setMessage("Account is blocked");
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(loginResponseDto);
     }
 
 

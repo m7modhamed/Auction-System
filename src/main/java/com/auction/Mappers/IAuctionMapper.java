@@ -6,7 +6,7 @@ import com.auction.Entity.Auction;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface AuctionMapper {
+public interface IAuctionMapper {
 
 
     Auction toAuction(RequestAuctionDto auction);

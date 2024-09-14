@@ -1,19 +1,19 @@
 package com.auction.Service.Implementation;
 
+import com.auction.Dtos.SignUpRequestDto;
 import com.auction.Entity.PaymentAccount;
+import com.auction.Mappers.IUserMapper;
 import com.auction.Service.Interfaces.IPaymentService;
 import com.auction.Service.Interfaces.IimageService;
 import com.auction.Dtos.UserAuthDto;
 import com.auction.Entity.Account;
 import com.auction.Entity.User;
 import com.auction.Service.Interfaces.IpasswordResetTokenService;
-import com.auction.Dtos.CredentialsDto;
-import com.auction.Dtos.SignUpDto;
+import com.auction.Dtos.LoginRequestDto;
 import com.auction.Entity.Role;
 import com.auction.event.RegistrationCompleteEvent;
 import com.auction.event.listener.RegistrationCompleteEventListener;
 import com.auction.exceptions.AppException;
-import com.auction.Mappers.UserMapper;
 import com.auction.Repository.AccountRepository;
 import com.auction.Repository.RoleRepository;
 import com.auction.Repository.UserRepository;
@@ -46,7 +46,7 @@ public class AuthService {
     private final IPaymentService paymentService;
     private final PasswordEncoder passwordEncoder;
     private final IpasswordResetTokenService passwordResetTokenService;
-    private final UserMapper userMapper;
+    private final IUserMapper userMapper;
     private final ApplicationEventPublisher publisher;
     private final RegistrationCompleteEventListener eventListener;
     private final AuthenticationManager authenticationManager;
@@ -54,37 +54,34 @@ public class AuthService {
 
 
 
-    public UserAuthDto login(CredentialsDto credentialsDto) {
+    public Account login(LoginRequestDto loginRequestDto) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        credentialsDto.login(),
-                        credentialsDto.password()
+                        loginRequestDto.login(),
+                        loginRequestDto.password()
                 )
         );
-        var user = accountRepository.findByEmail(credentialsDto.login())
+        return accountRepository.findByEmail(loginRequestDto.login())
                 .orElseThrow();
-        return userMapper.UserAuthDto(user);
-
     }
 
     @Transactional
-    public UserAuthDto register(SignUpDto userDto, HttpServletRequest request) {
-        Optional<Account> optionalAccount = accountRepository.findByEmail(userDto.email());
+    public UserAuthDto register(SignUpRequestDto signUpRequestDto, HttpServletRequest request) {
+        Optional<Account> optionalAccount = accountRepository.findByEmail(signUpRequestDto.email());
 
         if (optionalAccount.isPresent()) {
             throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
         }
 
-
-        User user = userMapper.signUpToUser(userDto);
+        User user = userMapper.signUpToUser(signUpRequestDto);
         // these lines for testing
-        user.setEmail(userDto.email());
-        user.setFirstName(userDto.firstName());
-        user.setLastName(userDto.lastName());
-        user.setImage(userDto.image());
+        user.setEmail(signUpRequestDto.email());
+        user.setFirstName(signUpRequestDto.firstName());
+        user.setLastName(signUpRequestDto.lastName());
+        user.setImage(signUpRequestDto.image());
 
-        user.setMyPassword(passwordEncoder.encode(userDto.password()));
+        user.setMyPassword(passwordEncoder.encode(signUpRequestDto.password()));
         user.setIsBlocked(false);
         user.setIsActive(false);
         user.setRoles(new HashSet<>());
@@ -111,7 +108,7 @@ public class AuthService {
         } catch (StripeException e) {
             throw new AppException("Failed to create stripe customer",HttpStatus.valueOf(e.getStatusCode()));
         }
-        imageService.save(userDto.image());
+        imageService.save(signUpRequestDto.image());
         User savedAccount = userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(savedAccount, UrlUtil.getApplicationUrl(request)));
         return userMapper.UserAuthDto(savedAccount);

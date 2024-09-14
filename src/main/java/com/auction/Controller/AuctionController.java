@@ -3,7 +3,7 @@ package com.auction.Controller;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
-import com.auction.Mappers.AuctionMapper;
+import com.auction.Mappers.IAuctionMapper;
 import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.Entity.Account;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/auction")
 public class AuctionController {
 
-    private final AuctionMapper auctionMapper;
+    private final IAuctionMapper auctionMapper;
     private final IAuctionService auctionService;
 
 

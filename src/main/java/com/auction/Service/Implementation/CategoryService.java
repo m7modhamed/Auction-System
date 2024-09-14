@@ -2,7 +2,7 @@ package com.auction.Service.Implementation;
 
 import com.auction.Dtos.CategoryDto;
 import com.auction.Entity.Category;
-import com.auction.Mappers.CategoryMapper;
+import com.auction.Mappers.ICategoryMapper;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.List;
 public class CategoryService implements ICategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
+    private final ICategoryMapper categoryMapper;
 
     @Override
     public Category CreateCategory(CategoryDto categoryDto){

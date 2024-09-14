@@ -4,8 +4,8 @@ import com.auction.Dtos.RequestBidDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.Bid;
-import com.auction.Mappers.AuctionMapper;
-import com.auction.Mappers.BidMapper;
+import com.auction.Mappers.IAuctionMapper;
+import com.auction.Mappers.IBidMapper;
 import com.auction.Service.Interfaces.IBidService;
 import com.auction.Entity.Account;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,8 @@ import java.util.List;
 public class BidController {
 
     private final IBidService bidService;
-    private final BidMapper bidMapper;
-    private final AuctionMapper auctionMapper;
+    private final IBidMapper bidMapper;
+    private final IAuctionMapper auctionMapper;
 
     @PostMapping("/make")
     public ResponseEntity<ResponseAuctionDto> addBid(@RequestBody RequestBidDto requestBidDto){

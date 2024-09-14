@@ -1,6 +1,7 @@
 package com.auction.security.config;
 
 import com.auction.Dtos.UserAuthDto;
+import com.auction.Entity.Account;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -39,21 +40,21 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(UserAuthDto user) {
+    public String createToken(Account account) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + 36000000); // 10 hours
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         return JWT.create()
-                .withSubject(user.getEmail())
+                .withSubject(account.getEmail())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
-                .withClaim("firstName", user.getFirstName())
-                .withClaim("lastName", user.getLastName())
-                .withClaim("roles" , new ArrayList<>(user.getRoles().stream().map(Role::getName).collect(Collectors.toList())))
-                .withClaim("isActive" , user.isActive())
-                .withClaim("isBlocked" , user.isBlocked())
+                .withClaim("firstName", account.getFirstName())
+                .withClaim("lastName", account.getLastName())
+                .withClaim("roles" , new ArrayList<>(account.getRoles().stream().map(Role::getName).collect(Collectors.toList())))
+                .withClaim("isActive" , account.getIsActive())
+                .withClaim("isBlocked" , account.getIsBlocked())
                 .sign(algorithm);
     }
 
