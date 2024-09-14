@@ -87,12 +87,17 @@ public class PaymentController {
     }
 
     @GetMapping("listCharges/{methodId}")
-    public ChargeCollection getAllCharges(@PathVariable String methodId){
+    public String getAllCharges(@PathVariable String methodId){
         try {
-            return paymentService.listChargesForPaymentMethod(methodId);
+            return paymentService.listChargesForPaymentMethod(methodId).toJson();
+        } catch (StripeException e) {
+
+            throw new RuntimeException("Stripe API error: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+
+            throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
+
 
     }
 
