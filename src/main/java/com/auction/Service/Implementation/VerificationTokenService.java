@@ -1,6 +1,6 @@
 package com.auction.Service.Implementation;
 
-import com.auction.Entity.User;
+import com.auction.Entity.Account;
 import com.auction.Repository.AccountRepository;
 import com.auction.Service.Interfaces.IVerificationTokenService;
 import com.auction.Entity.VerificationToken;
@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VerificationTokenService implements IVerificationTokenService {
     private final VerificationTokenRepository tokenRepository;
-    private final AccountRepository userRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public ResponseEntity<String> validateToken(String token) {
@@ -29,20 +29,20 @@ public class VerificationTokenService implements IVerificationTokenService {
             return new ResponseEntity<>("token not found",HttpStatus.NOT_FOUND);
         }
 
-        User user = theToken.get().getUser();
+        Account account = theToken.get().getAccount();
         Calendar calendar = Calendar.getInstance();
 
          if ((theToken.get().getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
              return new ResponseEntity<>("token expired",HttpStatus.BAD_REQUEST);
          }
-        user.setIsActive(true);
-        userRepository.save(user);
+        account.setIsActive(true);
+        accountRepository.save(account);
         return ResponseEntity.ok("token valid");
     }
 
     @Override
-    public void saveVerificationTokenForUser(User user, String token) {
-        var verificationToken = new VerificationToken(token, user);
+    public void saveVerificationTokenForUser(Account account, String token) {
+        var verificationToken = new VerificationToken(token, account);
         tokenRepository.save(verificationToken);
     }
 
@@ -53,6 +53,6 @@ public class VerificationTokenService implements IVerificationTokenService {
 
     @Override
     public void deleteUserToken(Long id) {
-        tokenRepository.deleteByUserId(id);
+        tokenRepository.deleteByAccountId(id);
     }
 }

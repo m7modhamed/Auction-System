@@ -23,11 +23,11 @@ public class VerificationToken {
     private Date expirationTime;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Account account;
 
-    public VerificationToken(String token, User user) {
+    public VerificationToken(String token, Account account) {
         this.token = token;
-        this.user = user;
+        this.account = account;
         this.expirationTime = TokenExpirationTime.getExpirationTime();
     }
 }

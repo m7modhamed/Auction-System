@@ -1,6 +1,5 @@
 package com.auction.security.config;
 
-import com.auction.Dtos.UserAuthDto;
 import com.auction.Entity.Account;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class UserAuthenticationProvider {
 
-    @Value("${security.jwt.token.secret-key:secret-key}")
+    @Value("${security.jwt.token.secret-key}")
     private String secretKey;
 
    // private final UserService userService;
@@ -59,38 +57,7 @@ public class UserAuthenticationProvider {
     }
 
 
-    public Authentication validateToken(String token) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-        DecodedJWT decoded = verifier.verify(token);
-
-        UserAuthDto user = UserAuthDto.builder()
-                .email(decoded.getSubject())
-                .firstName(decoded.getClaim("firstName").asString())
-                .lastName(decoded.getClaim("lastName").asString())
-                .build();
-
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        for (Role role : user.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-
-        return new UsernamePasswordAuthenticationToken(user, null, authorities);
-    }
-
-   /* public Authentication validateTokenStrongly(String token, HttpServletRequest request) {
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
-        DecodedJWT decoded = verifier.verify(token);
-
-        UserDetails user=  userDetailsService.loadUserByUsername(decoded.getSubject());
-
-        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-    }*/
 
     public Authentication validateTokenStrongly(String token, HttpServletRequest request) {
         try {

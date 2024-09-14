@@ -1,19 +1,10 @@
 package com.auction.Mappers;
 
 import com.auction.Dtos.SignUpRequestDto;
-import com.auction.Dtos.UserDto;
-import com.auction.Dtos.UserAuthDto;
-import com.auction.Entity.Account;
 import com.auction.Entity.User;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 
 @Mapper(componentModel = "spring")
 public interface IUserMapper {
