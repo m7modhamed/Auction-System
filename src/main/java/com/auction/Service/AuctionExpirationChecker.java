@@ -8,6 +8,7 @@ import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.Entity.User;
 import com.auction.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

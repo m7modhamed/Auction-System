@@ -21,7 +21,7 @@ import java.util.Optional;
 public class BidService implements IBidService {
     private final BidRepository bidRepository;
     private final AuctionService auctionService;
-    private final AuthService authService;
+    private final AccountService accountService;
 
     @Override
     public Auction makeBid(RequestBidDto requestBidDto, Long userId) {
@@ -31,41 +31,39 @@ public class BidService implements IBidService {
         Bid bid = new Bid();
 
         //check if the bidder exist or not && set bidder
-        Optional<User> bidder = authService.getUserById(userId);
+        Optional<User> bidder = accountService.getUserById(userId);
         if (bidder.isEmpty()) {
             throw new AppException("User Not Found", HttpStatus.NOT_FOUND);
         }
 
         bid.setBidder(bidder.get());
 
-        //check if the auction exist and active or not && set auction
-        Optional<Auction> auction = auctionService.getAuctionById(auctionId);
-        if (auction.isEmpty()) {
-            throw new AppException("Auction Not Found", HttpStatus.NOT_FOUND);
-        }
-        if (!auction.get().isActive()) {
+
+        Auction auction = auctionService.getAuctionById(auctionId);
+
+        if (!auction.isActive()) {
             throw new AppException("Auction Not Active", HttpStatus.BAD_REQUEST);
         }
-        bid.setAuction(auction.get());
+        bid.setAuction(auction);
 
 
-        if (Objects.equals(userId, auction.get().getSeller().getId())) {
+        if (Objects.equals(userId, auction.getSeller().getId())) {
             throw new AppException("You Are Auction Owner", HttpStatus.BAD_REQUEST);
         }
 
         //check amount of bid > minimum bid allowed
-        if (bidAmount < auction.get().getMinBid()) {
+        if (bidAmount < auction.getMinBid()) {
             throw new AppException("Bid Amount Must Greater Than The Minimum Of Bid", HttpStatus.BAD_REQUEST);
         }
 
         //check amount of bid > Top bid
-        Bid topBid=getLatestBid(auction.get());
+        Bid topBid=getLatestBid(auction);
         if (bidAmount < topBid.getAmount()) {
             throw new AppException("Bid Amount Must Greater Than The Top Bid", HttpStatus.BAD_REQUEST);
         }
         bid.setAmount(bidAmount);
-        auction.get().setCurrentPrice(auction.get().getCurrentPrice() + bidAmount);
-        auction.get().getBids().add(bid);
+        auction.setCurrentPrice(auction.getCurrentPrice() + bidAmount);
+        auction.getBids().add(bid);
         bidRepository.save(bid);
 
         return bid.getAuction();
@@ -73,7 +71,7 @@ public class BidService implements IBidService {
 
     @Override
     public void deleteBidById(Long bidId, Long userId) {
-        Optional<User> user = authService.getUserById(userId);
+        Optional<User> user = accountService.getUserById(userId);
         Optional<Bid> bid = bidRepository.findById(bidId);
 
         if (user.isEmpty()) {

@@ -35,17 +35,6 @@ public class PaymentService implements IPaymentService {
 
 
 
-
-    public Customer getCustomer(String id) throws StripeException {
-        Stripe.apiKey=stripeKey;
-
-        return Customer.retrieve(id);
-
-
-    }
-
-
-
     public String addCardWithoutDuplicate(String token, String customerId) throws StripeException {
         Stripe.apiKey=stripeKey;
 

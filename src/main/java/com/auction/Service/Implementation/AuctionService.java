@@ -10,6 +10,8 @@ import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.exceptions.AppException;
 import com.auction.Entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class AuctionService implements IAuctionService {
     private final IAuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
     private final CategoryRepository categoryRepository;
-    private final AuthService authService;
+    private final AccountService accountService;
 
     private static final int DELETION_TIME_LIMIT =20;
 
@@ -45,7 +47,7 @@ public class AuctionService implements IAuctionService {
         }
         newAuction.getItem().setCategory(category.get());
 
-        Optional<User> user= authService.getUserById(userId);
+        Optional<User> user= accountService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("User not found", HttpStatus.NOT_FOUND);
         }
@@ -69,14 +71,20 @@ public class AuctionService implements IAuctionService {
     }
 
     @Override
-    public Optional<Auction> getAuctionById(Long auctionId) {
-        return auctionRepository.findById(auctionId);
+    public Auction getAuctionById(Long auctionId) {
+
+        Optional<Auction> auction = auctionRepository.findById(auctionId);
+        if(auction.isEmpty()){
+            throw new AppException("Auction not found", HttpStatus.NOT_FOUND);
+        }
+
+        return auction.get();
     }
 
     @Override
     public void deleteAuctionById(Long id, Long userId) {
         Optional<Auction> auction=auctionRepository.findById(id);
-        Optional<User> user= authService.getUserById(userId);
+        Optional<User> user= accountService.getUserById(userId);
 
         deleteAuctionValidation(user,auction);
 
@@ -86,7 +94,7 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public List<Auction> getMyAuctions(Long userId) {
-        Optional<User> user= authService.getUserById(userId);
+        Optional<User> user= accountService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
         }
@@ -96,7 +104,7 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public List<Auction> getMyWonAuctions(Long userId) {
-        Optional<User> user= authService.getUserById(userId);
+        Optional<User> user= accountService.getUserById(userId);
         if(user.isEmpty()){
             throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
         }
@@ -131,8 +139,13 @@ public class AuctionService implements IAuctionService {
     }
 
     @Override
-    public List<Auction> getActiveAuctions() {
+    public Page<Auction> getActiveAuctions(PageRequest pageRequest) {
 
+        return auctionRepository.findByActiveTrue(pageRequest);
+    }
+
+    @Override
+    public List<Auction> getActiveAuctions() {
         return auctionRepository.findByActiveTrue();
     }
 

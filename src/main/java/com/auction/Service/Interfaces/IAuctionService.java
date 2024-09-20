@@ -2,9 +2,8 @@ package com.auction.Service.Interfaces;
 
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,13 +13,14 @@ public interface IAuctionService {
 
     List<Auction> getAllAuctions();
 
-    Optional<Auction> getAuctionById(Long auctionId);
+    Auction getAuctionById(Long auctionId);
 
     void deleteAuctionById(Long id, Long userId);
 
     List<Auction> getMyAuctions(Long userId);
 
     List<Auction> getMyWonAuctions(Long userId);
+    Page<Auction> getActiveAuctions(PageRequest pageRequest);
     List<Auction> getActiveAuctions();
 
 }

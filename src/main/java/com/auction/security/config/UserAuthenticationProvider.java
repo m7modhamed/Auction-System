@@ -53,6 +53,7 @@ public class UserAuthenticationProvider {
                 .withClaim("roles" , new ArrayList<>(account.getRoles().stream().map(Role::getName).collect(Collectors.toList())))
                 .withClaim("isActive" , account.getIsActive())
                 .withClaim("isBlocked" , account.getIsBlocked())
+                .withClaim("image" , account.getImage().getImageUrl())
                 .sign(algorithm);
     }
 

@@ -9,20 +9,16 @@ import java.util.List;
 public interface IPaymentService {
 
 
-    public Customer createCustomer(Account user) throws StripeException;
+     Customer createCustomer(Account user) throws StripeException;
 
+     String addCardWithoutDuplicate(String token, String customerId) throws StripeException;
 
-    public Customer getCustomer(String id) throws StripeException;
+     List<PaymentMethod> getCustomerPaymentMethods(String customerId) throws StripeException;
 
-    public String addCardWithoutDuplicate(String token, String customerId) throws StripeException;
+     PaymentIntent createPaymentIntent(String customerId, String paymentMethodId, Long amount, String currency, String description) throws StripeException;
 
-    public List<PaymentMethod> getCustomerPaymentMethods(String customerId) throws StripeException;
+     Refund createRefund(String chargeId, Long amount) throws StripeException;
 
-
-    public PaymentIntent createPaymentIntent(String customerId, String paymentMethodId, Long amount, String currency, String description) throws StripeException;
-
-    public Refund createRefund(String chargeId, Long amount) throws StripeException;
-
-    public ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception;
+     ChargeCollection listChargesForPaymentMethod(String paymentMethodId) throws Exception;
 
     }

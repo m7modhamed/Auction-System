@@ -1,6 +1,5 @@
 package com.auction.security.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -40,7 +39,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auction/all" , "/users").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auctions","/category/all").permitAll()
                         .requestMatchers("/moderator/**" ).hasRole("MODERATOR")
                         .requestMatchers(HttpMethod.GET,"/admin").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/user").hasRole("USER")
