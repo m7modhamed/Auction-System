@@ -1,11 +1,11 @@
 package com.auction.Service.Interfaces;
 
+import com.auction.Dtos.AuctionSearchCriteria;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import java.util.List;
-import java.util.Optional;
 
 public interface IAuctionService {
 
@@ -20,7 +20,8 @@ public interface IAuctionService {
     List<Auction> getMyAuctions(Long userId);
 
     List<Auction> getMyWonAuctions(Long userId);
-    Page<Auction> getActiveAuctions(PageRequest pageRequest);
+    Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest);
+
     List<Auction> getActiveAuctions();
 
 }

@@ -1,44 +1,42 @@
 package com.auction.Dtos;
 
-import com.auction.Enums.Address;
+import com.auction.validation.customAnnotations.ValidAddress;
+import com.auction.validation.customAnnotations.ValidItemStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseAuctionDto {
+public class AuctionSearchCriteria {
 
-    private Long id;
+    private String searchKey;
 
-    private boolean active;
+   //@ValidItemStatus
+    private String itemStatus;
+
+    private String category;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime beginDate;
 
+
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime expireDate;
 
-    private ResponseItemDto item;
+    //@ValidAddress
+    private String location;
 
-    private Address location;
 
-    private UserDto seller;
+    private double minCurrentPrice;
 
-    private float minBid;
-
-    private float initialPrice;
-
-    private float currentPrice;
-
-    private List<ResponseBidDto> bids;
-
+    private double maxCurrentPrice;
 
 
 }

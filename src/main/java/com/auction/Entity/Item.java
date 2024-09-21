@@ -29,7 +29,7 @@ public class Item {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ItemStatus ItemStatus;
+    private ItemStatus itemStatus;
 
     @JoinColumn(name = "category_id" , referencedColumnName = "id" ,nullable = false )
     @ManyToOne(fetch = FetchType.EAGER)

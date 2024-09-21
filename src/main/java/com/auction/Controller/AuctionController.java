@@ -1,5 +1,6 @@
 package com.auction.Controller;
 
+import com.auction.Dtos.AuctionSearchCriteria;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
@@ -57,20 +58,29 @@ public class AuctionController {
     }
 
 
-
     @GetMapping
-    public ResponseEntity<Page<ResponseAuctionDto>> getAuctions(
+    public ResponseEntity<Page<ResponseAuctionDto>> getAuctionsForTest(
+            @RequestBody @Valid AuctionSearchCriteria criteria,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-            @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy) {
+            @RequestParam(value = "sortBy", required = false) String[] sortBy,
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "DESC") String sortDirection) {
 
-        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by(sortBy));
-        Page<Auction> auctionPage = auctionService.getActiveAuctions(pageRequest);
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
+
+        if (sortBy == null || sortBy.length == 0) {
+            sortBy = new String[] { "expireDate" };
+        }
+        Sort sort = Sort.by(direction, sortBy);
+
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+        Page<Auction> auctionPage = auctionService.getActiveAuctions(criteria, pageRequest);
 
         Page<ResponseAuctionDto> responseAuctionPage = auctionPage.map(auctionMapper::toResponseAuctionDto);
 
         return ResponseEntity.ok(responseAuctionPage);
     }
+
 
 
 

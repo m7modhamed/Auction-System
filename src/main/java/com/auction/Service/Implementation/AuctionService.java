@@ -1,10 +1,14 @@
 package com.auction.Service.Implementation;
 
+import com.auction.Dtos.AuctionSearchCriteria;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.Category;
+import com.auction.Enums.Address;
+import com.auction.Enums.ItemStatus;
 import com.auction.Mappers.IAuctionMapper;
 import com.auction.Repository.AuctionRepository;
+import com.auction.Repository.AuctionSpecification;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.exceptions.AppException;
@@ -12,6 +16,7 @@ import com.auction.Entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -113,6 +118,8 @@ public class AuctionService implements IAuctionService {
     }
 
 
+
+
     private void deleteAuctionValidation(Optional<User> user, Optional<Auction> auction){
 
         if(user.isEmpty()){
@@ -138,16 +145,43 @@ public class AuctionService implements IAuctionService {
 
     }
 
-    @Override
-    public Page<Auction> getActiveAuctions(PageRequest pageRequest) {
 
-        return auctionRepository.findByActiveTrue(pageRequest);
-    }
 
     @Override
     public List<Auction> getActiveAuctions() {
         return auctionRepository.findByActiveTrue();
     }
 
+
+
+    @Override
+    public Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest) {
+
+        String strItemStatus= criteria.getItemStatus();
+        String strAddress = criteria.getLocation();
+        ItemStatus itemStatus;
+        Address address;
+        if(strItemStatus.isEmpty() || strItemStatus.isBlank()){
+             itemStatus=null;
+        }else{
+             itemStatus=ItemStatus.valueOf(strItemStatus);
+        }
+
+        if(strAddress.isEmpty() || strAddress.isBlank()){
+            address=null;
+        }else {
+            address=Address.valueOf(strAddress);
+        }
+        Specification<Auction> spec= Specification.where(AuctionSpecification.hasActive())
+                .and(AuctionSpecification.hasName(criteria.getSearchKey()))
+                .or(AuctionSpecification.hasDescription(criteria.getSearchKey()))
+                .and(AuctionSpecification.hasItemStatus(itemStatus))
+                .and(AuctionSpecification.hasCategory(criteria.getCategory()))
+                .and(AuctionSpecification.hasDateRange(criteria.getBeginDate() , criteria.getExpireDate()))
+                .and(AuctionSpecification.hasLocation(address))
+                .and(AuctionSpecification.hasPriceBetween(criteria.getMinCurrentPrice(), criteria.getMaxCurrentPrice()));
+
+        return auctionRepository.findAll(spec, pageRequest);
+    }
 
 }

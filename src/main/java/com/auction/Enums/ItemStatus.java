@@ -8,4 +8,5 @@ public enum ItemStatus {
     NEW,
     USED;
 
+
 }
