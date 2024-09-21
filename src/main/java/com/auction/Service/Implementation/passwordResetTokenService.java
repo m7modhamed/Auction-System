@@ -5,7 +5,9 @@ import com.auction.Entity.PasswordResetToken;
 import com.auction.Service.Interfaces.IpasswordResetTokenService;
 import com.auction.Repository.PasswordResetTokenRepository;
 import com.auction.Repository.AccountRepository;
+import com.auction.exceptions.AppException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +44,12 @@ public class passwordResetTokenService implements IpasswordResetTokenService {
 
     @Override
     public void resetPassword(Account theAccount, String newPassword) {
-        theAccount.setMyPassword(passwordEncoder.encode(newPassword));
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        if (passwordEncoder.matches(newPassword, theAccount.getMyPassword())) {
+            throw new AppException("The new password must be different from the old password.", HttpStatus.BAD_REQUEST);
+        }
+
+        theAccount.setMyPassword(encodedPassword);
         accountRepository.save(theAccount);
     }
     @Override

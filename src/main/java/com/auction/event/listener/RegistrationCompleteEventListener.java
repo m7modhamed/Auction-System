@@ -58,12 +58,12 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     public void sendPasswordResetVerificationEmail(String url, Account account) throws MessagingException, UnsupportedEncodingException {
         String subject = "Password Reset Request Verification";
         String senderName = "Users Verification Service";
-        String mailContent = "<p> Hi, "+ this.account.getFirstName()+ ", </p>"+
+        String mailContent = "<p> Hi, "+ account.getFirstName()+ ", </p>"+
                 "<p><b>You recently requested to reset your password,</b>"+
                 "Please, follow the link below to complete the action.</p>"+
                 "<a href=\"" +url+ "\">Reset password</a>"+
                 "<p> Users Registration Portal Service";
-        emailMessage(subject, senderName, mailContent, mailSender, this.account);
+        emailMessage(subject, senderName, mailContent, mailSender, account);
     }
 
     private static void emailMessage(String subject, String senderName,

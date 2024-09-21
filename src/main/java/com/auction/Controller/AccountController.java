@@ -6,6 +6,7 @@ import com.auction.security.config.UserAuthenticationProvider;
 import com.auction.Entity.Account;
 import com.auction.Entity.VerificationToken;
 import com.auction.Service.Implementation.VerificationTokenService;
+import com.auction.utility.Utility;
 import com.auction.validation.customAnnotations.ValidPassword;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -77,11 +78,13 @@ public class AccountController {
     
 
     @PutMapping("/update-account")
-    public ResponseEntity<Account> updateAccountInfo(@RequestBody UpdateAccountDto updateAccountDto){
+    public ResponseEntity<String> updateAccountInfo(@RequestBody UpdateAccountDto updateAccountDto){
 
         accountService.updateAccount(updateAccountDto);
 
-        return ResponseEntity.noContent().build();
+        String token=userAuthenticationProvider.createToken(Utility.getCurrentAccount());
+
+        return ResponseEntity.ok(token);
 
     }
 

@@ -12,4 +12,9 @@ public class Utility {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((Account) authentication.getPrincipal()).getId();
     }
+
+    public static Account getCurrentAccount(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Account) authentication.getPrincipal();
+    }
 }
