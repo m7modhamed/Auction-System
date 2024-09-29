@@ -27,7 +27,7 @@ public class ResponseAuctionDto {
 
     private ResponseItemDto item;
 
-    private Address location;
+    private Address address;
 
     private UserDto seller;
 

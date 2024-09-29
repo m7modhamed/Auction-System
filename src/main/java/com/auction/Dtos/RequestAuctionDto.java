@@ -1,15 +1,9 @@
 package com.auction.Dtos;
 
-import com.auction.Enums.Address;
 import com.auction.validation.customAnnotations.ValidAddress;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +26,7 @@ public class RequestAuctionDto {
 
 
     @ValidAddress
-    private String location;
+    private String address;
 
     @Min(1)
     private float minBid;

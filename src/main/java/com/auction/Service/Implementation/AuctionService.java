@@ -11,8 +11,10 @@ import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.AuctionSpecification;
 import com.auction.Repository.CategoryRepository;
 import com.auction.Service.Interfaces.IAuctionService;
+import com.auction.Service.Interfaces.IUserService;
 import com.auction.exceptions.AppException;
 import com.auction.Entity.User;
+import com.auction.utility.Utility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +36,7 @@ public class AuctionService implements IAuctionService {
     private final AccountService accountService;
 
     private static final int DELETION_TIME_LIMIT =20;
+    private final IUserService userService;
 
     @Override
     public Auction CreateAuction(RequestAuctionDto requestAuctionDto,Long userId) {
@@ -104,7 +107,7 @@ public class AuctionService implements IAuctionService {
             throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
         }
 
-        return user.get().getOwnAuctions();
+        return user.get().getMyAuctions();
     }
 
     @Override
@@ -138,7 +141,7 @@ public class AuctionService implements IAuctionService {
         }
 
         //check the user is already owner if auction wants to delete
-        if(!user.get().getOwnAuctions().contains(auction.get())){
+        if(!user.get().getMyAuctions().contains(auction.get())){
             throw new AppException("The user attempting to delete the auction is not the owner.", HttpStatus.BAD_REQUEST);
 
         }
@@ -152,13 +155,20 @@ public class AuctionService implements IAuctionService {
         return auctionRepository.findByActiveTrue();
     }
 
+    @Override
+    public void joinAuction(long auctionId) {
+        User user =(User) Utility.getCurrentAccount();
+        Auction auction = getAuctionById(auctionId);
+        user.getJoinedAuctions().add(auction);
+        userService.save(user);
+    }
 
 
     @Override
     public Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest) {
 
         String strItemStatus= criteria.getItemStatus();
-        String strAddress = criteria.getLocation();
+        String strAddress = criteria.getAddress();
         ItemStatus itemStatus;
         Address address;
         if(strItemStatus.isEmpty() || strItemStatus.isBlank()){
@@ -178,7 +188,7 @@ public class AuctionService implements IAuctionService {
                 .and(AuctionSpecification.hasItemStatus(itemStatus))
                 .and(AuctionSpecification.hasCategory(criteria.getCategory()))
                 .and(AuctionSpecification.hasDateRange(criteria.getBeginDate() , criteria.getExpireDate()))
-                .and(AuctionSpecification.hasLocation(address))
+                .and(AuctionSpecification.hasAddress(address))
                 .and(AuctionSpecification.hasPriceBetween(criteria.getMinCurrentPrice(), criteria.getMaxCurrentPrice()));
 
         return auctionRepository.findAll(spec, pageRequest);

@@ -36,7 +36,7 @@ public class Auction {
 
     @Column(nullable = false )
     @Enumerated(EnumType.STRING)
-    private Address location;
+    private Address address;
 
     @Column
     private double commission;
@@ -45,6 +45,11 @@ public class Auction {
     @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
     @JsonManagedReference
     private User seller;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "winner_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private User winner;
 
 
     @Column(nullable = false)

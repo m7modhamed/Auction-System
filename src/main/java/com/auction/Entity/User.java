@@ -22,14 +22,20 @@ public class User extends Account{
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
     @JsonBackReference
-    private List<Auction> ownAuctions;
+    private List<Auction> myAuctions;
 
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "winner_id", referencedColumnName = "id")
     @JsonBackReference
-    private List<Auction> WonAuctions;
+    private List<Auction> wonAuctions;
 
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "Joined-auctions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "auction_id"))
+    private List<Auction> JoinedAuctions;
 
 }
 

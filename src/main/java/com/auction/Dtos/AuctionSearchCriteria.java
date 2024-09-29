@@ -31,7 +31,7 @@ public class AuctionSearchCriteria {
     private LocalDateTime expireDate;
 
     //@ValidAddress
-    private String location;
+    private String address;
 
 
     private double minCurrentPrice;

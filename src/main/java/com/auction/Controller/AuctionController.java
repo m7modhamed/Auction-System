@@ -4,17 +4,22 @@ import com.auction.Dtos.AuctionSearchCriteria;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
+import com.auction.Entity.User;
 import com.auction.Mappers.IAuctionMapper;
+import com.auction.Service.Implementation.UserService;
 import com.auction.Service.Interfaces.IAuctionService;
+import com.auction.Service.Interfaces.IUserService;
 import com.auction.utility.Utility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +30,7 @@ public class AuctionController {
 
     private final IAuctionMapper auctionMapper;
     private final IAuctionService auctionService;
+    private final IUserService userService;
 
 
     @PostMapping
@@ -60,11 +66,20 @@ public class AuctionController {
 
     @GetMapping
     public ResponseEntity<Page<ResponseAuctionDto>> getAuctionsForTest(
-            @RequestBody @Valid AuctionSearchCriteria criteria,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortBy", required = false) String[] sortBy,
-            @RequestParam(value = "sortDirection", required = false, defaultValue = "DESC") String sortDirection) {
+            @RequestParam(value = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
+            @RequestParam(value = "searchKey", required = false) String searchKey,
+            @RequestParam(value = "itemStatus", required = false) String itemStatus,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "beginDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") LocalDateTime beginDate,
+            @RequestParam(value = "expireDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") LocalDateTime expireDate,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "minCurrentPrice", required = false, defaultValue = "0") Double minCurrentPrice,
+            @RequestParam(value = "maxCurrentPrice", required = false , defaultValue = "0") Double maxCurrentPrice
+
+    ) {
 
         Sort.Direction direction = Sort.Direction.fromString(sortDirection.toUpperCase());
 
@@ -74,6 +89,17 @@ public class AuctionController {
         Sort sort = Sort.by(direction, sortBy);
 
         PageRequest pageRequest = PageRequest.of(offset, pageSize, sort);
+
+        AuctionSearchCriteria criteria = new AuctionSearchCriteria();
+        criteria.setSearchKey(searchKey);
+        criteria.setItemStatus(itemStatus);
+        criteria.setCategory(category);
+        criteria.setBeginDate(beginDate);
+        criteria.setExpireDate(expireDate);
+        criteria.setAddress(address.toUpperCase());
+        criteria.setMinCurrentPrice(minCurrentPrice);
+        criteria.setMaxCurrentPrice(maxCurrentPrice);
+
         Page<Auction> auctionPage = auctionService.getActiveAuctions(criteria, pageRequest);
 
         Page<ResponseAuctionDto> responseAuctionPage = auctionPage.map(auctionMapper::toResponseAuctionDto);
@@ -111,6 +137,13 @@ public class AuctionController {
     }
 
 
+    @GetMapping("/join/{auctionId}")
+    public ResponseEntity<String> joinAuction(@PathVariable long auctionId){
+
+        auctionService.joinAuction(auctionId);
+
+        return ResponseEntity.ok("joined auction successfully.");
+    }
 
 
 }

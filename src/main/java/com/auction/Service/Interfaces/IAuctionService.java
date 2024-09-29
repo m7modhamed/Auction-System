@@ -3,8 +3,12 @@ package com.auction.Service.Interfaces;
 import com.auction.Dtos.AuctionSearchCriteria;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
+import com.auction.Entity.User;
+import com.auction.utility.Utility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 public interface IAuctionService {
@@ -24,4 +28,5 @@ public interface IAuctionService {
 
     List<Auction> getActiveAuctions();
 
+    void joinAuction(long auctionId);
 }

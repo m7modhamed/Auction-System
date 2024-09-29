@@ -68,13 +68,13 @@ public class AuctionSpecification {
 
 
 
-    public static Specification<Auction> hasLocation(Address location) {
+    public static Specification<Auction> hasAddress(Address address) {
         return (root, query, criteriaBuilder) -> {
-            if (location == null) {
+            if (address == null) {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.equal(root.get("location") , location);
+            return criteriaBuilder.equal(root.get("address") , address);
         };
     }
 
