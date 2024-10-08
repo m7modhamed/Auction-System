@@ -29,4 +29,6 @@ public interface IAuctionService {
     List<Auction> getActiveAuctions();
 
     void joinAuction(long auctionId);
+
+    boolean canDeleteWithoutCharge(Long accountId);
 }

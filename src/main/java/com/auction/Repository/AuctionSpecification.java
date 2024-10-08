@@ -5,6 +5,7 @@ import com.auction.Entity.Category;
 import com.auction.Entity.Item;
 import com.auction.Enums.Address;
 import com.auction.Enums.ItemStatus;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,8 +17,10 @@ public class AuctionSpecification {
 
 
     public static Specification<Auction> hasActive() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("active"),true);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("active"), true);
     }
+
+
 
     public static Specification<Auction> hasName(String keySearch) {
         return (root, query, criteriaBuilder) -> {
@@ -53,28 +56,42 @@ public class AuctionSpecification {
         };
     }
 
-    public static Specification<Auction> hasCategory(String category) {
+    public static Specification<Auction> hasCategory(List<String> categories) {
         return (root, query, criteriaBuilder) -> {
-            if (category == null || category.isEmpty() || category.isBlank()) {
+
+            if (categories == null || categories.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
 
             Join<Auction, Item> itemJoin = root.join("item");
             Join<Item, Category> categoryJoin = itemJoin.join("category");
-            return criteriaBuilder.equal(categoryJoin.get("name") , category);
+
+
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(categoryJoin.get("name"));
+            for (String category : categories) {
+                inClause.value(category);
+            }
+
+            return inClause;
         };
     }
 
 
 
 
-    public static Specification<Auction> hasAddress(Address address) {
+    public static Specification<Auction> hasAddress(List<Address> addresses) {
         return (root, query, criteriaBuilder) -> {
-            if (address == null) {
+            if (addresses == null || addresses.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.equal(root.get("address") , address);
+            // Create a Predicate for the address list
+            CriteriaBuilder.In<Address> inClause = criteriaBuilder.in(root.get("address"));
+            for (Address address : addresses) {
+                inClause.value(address);
+            }
+
+            return inClause;
         };
     }
 

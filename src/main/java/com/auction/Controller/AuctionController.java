@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -63,19 +64,24 @@ public class AuctionController {
         return ResponseEntity.ok("Auction with ID " + id + " deleted successfully.");
     }
 
+    @GetMapping("/isDeleteFree/{id}")
+    public ResponseEntity<Boolean> isOverDeleteTime(@PathVariable Long id){
+
+        return ResponseEntity.ok(auctionService.canDeleteWithoutCharge(id));
+    }
 
     @GetMapping
-    public ResponseEntity<Page<ResponseAuctionDto>> getAuctionsForTest(
+    public ResponseEntity<Page<ResponseAuctionDto>> getAuctionsFor(
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortBy", required = false) String[] sortBy,
             @RequestParam(value = "sortDirection", required = false, defaultValue = "DESC") String sortDirection,
             @RequestParam(value = "searchKey", required = false) String searchKey,
             @RequestParam(value = "itemStatus", required = false) String itemStatus,
-            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "category", required = false) String[] category,
             @RequestParam(value = "beginDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") LocalDateTime beginDate,
             @RequestParam(value = "expireDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") LocalDateTime expireDate,
-            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "address", required = false) String[] address,
             @RequestParam(value = "minCurrentPrice", required = false, defaultValue = "0") Double minCurrentPrice,
             @RequestParam(value = "maxCurrentPrice", required = false , defaultValue = "0") Double maxCurrentPrice
 
@@ -93,10 +99,10 @@ public class AuctionController {
         AuctionSearchCriteria criteria = new AuctionSearchCriteria();
         criteria.setSearchKey(searchKey);
         criteria.setItemStatus(itemStatus);
-        criteria.setCategory(category);
+        criteria.setCategory(Arrays.stream(category).toList());
         criteria.setBeginDate(beginDate);
         criteria.setExpireDate(expireDate);
-        criteria.setAddress(address.toUpperCase());
+        criteria.setAddress(Arrays.stream(address).toList());
         criteria.setMinCurrentPrice(minCurrentPrice);
         criteria.setMaxCurrentPrice(maxCurrentPrice);
 

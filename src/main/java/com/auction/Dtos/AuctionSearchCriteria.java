@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class AuctionSearchCriteria {
    //@ValidItemStatus
     private String itemStatus;
 
-    private String category;
+    private List<String> category;
 
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime beginDate;
@@ -31,7 +32,7 @@ public class AuctionSearchCriteria {
     private LocalDateTime expireDate;
 
     //@ValidAddress
-    private String address;
+    private List<String> address;
 
 
     private double minCurrentPrice;

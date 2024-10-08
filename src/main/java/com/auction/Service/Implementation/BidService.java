@@ -41,7 +41,7 @@ public class BidService implements IBidService {
 
         Auction auction = auctionService.getAuctionById(auctionId);
 
-        if (!auction.isActive()) {
+        if (!auction.getActive()) {
             throw new AppException("Auction Not Active", HttpStatus.BAD_REQUEST);
         }
         bid.setAuction(auction);

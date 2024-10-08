@@ -20,7 +20,7 @@ public class Auction {
 
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active = true;
 
     @Column(name = "begin_Date", nullable = false)
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")

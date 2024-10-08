@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +67,7 @@ public class AuctionService implements IAuctionService {
 
         //handle payment charge
         /*
-        * We have to charge the seller a temporary amount to ensure the seriousness of the auction
+        * We have to charge the seller reserved amount to ensure the seriousness of the auction
         *
         * the amount will be percentage of initial price 
         * */
@@ -89,15 +91,64 @@ public class AuctionService implements IAuctionService {
         return auction.get();
     }
 
+
+    @Override
+    public boolean canDeleteWithoutCharge(Long id) {
+        Optional<Auction> auction=auctionRepository.findById(id);
+
+        if(auction.isEmpty()){
+            throw new AppException("Auction not found", HttpStatus.NOT_FOUND);
+        }
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime deletionAllowedTime = auction.get().getBeginDate().plusMinutes(DELETION_TIME_LIMIT);
+
+        return currentTime.isBefore(deletionAllowedTime);
+
+    }
+
     @Override
     public void deleteAuctionById(Long id, Long userId) {
         Optional<Auction> auction=auctionRepository.findById(id);
         Optional<User> user= accountService.getUserById(userId);
 
+        // validation before delete the auction
         deleteAuctionValidation(user,auction);
 
+        //check the time before deletion
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime deletionAllowedTime = auction.get().getBeginDate().plusMinutes(DELETION_TIME_LIMIT);
+        if(currentTime.isBefore(deletionAllowedTime)) {
+            //here we must refund the reserved amount again to the user account
+            //******
+            //********
+            auctionRepository.deleteById(id);
+        }else{
+            // throw new AppException("Deletion is not allowed after " + DELETION_TIME_LIMIT + " minutes from auction start time.", HttpStatus.BAD_REQUEST);
+            //here we don't need to refund the reserved amount to the user account
+            auctionRepository.deleteById(id);
 
-        auctionRepository.deleteById(id);
+        }
+
+
+    }
+
+    private void deleteAuctionValidation(Optional<User> user, Optional<Auction> auction){
+
+        if(user.isEmpty()){
+            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
+        }
+
+        if(auction.isEmpty()){
+            throw new AppException("the auction dose not exist",HttpStatus.NOT_FOUND);
+        }
+
+
+        //check the user is already owner if auction wants to delete
+        if(!user.get().getMyAuctions().contains(auction.get())){
+            throw new AppException("The user attempting to delete the auction is not the owner.", HttpStatus.BAD_REQUEST);
+
+        }
+
     }
 
     @Override
@@ -123,30 +174,7 @@ public class AuctionService implements IAuctionService {
 
 
 
-    private void deleteAuctionValidation(Optional<User> user, Optional<Auction> auction){
 
-        if(user.isEmpty()){
-            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
-        }
-
-        if(auction.isEmpty()){
-            throw new AppException("the auction dose not exist",HttpStatus.NOT_FOUND);
-        }
-
-        //check the time before deletion
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime deletionAllowedTime = auction.get().getBeginDate().plusMinutes(DELETION_TIME_LIMIT);
-        if (currentTime.isAfter(deletionAllowedTime)) {
-            throw new AppException("Deletion is not allowed after " + DELETION_TIME_LIMIT + " minutes from auction start time.", HttpStatus.BAD_REQUEST);
-        }
-
-        //check the user is already owner if auction wants to delete
-        if(!user.get().getMyAuctions().contains(auction.get())){
-            throw new AppException("The user attempting to delete the auction is not the owner.", HttpStatus.BAD_REQUEST);
-
-        }
-
-    }
 
 
 
@@ -164,32 +192,44 @@ public class AuctionService implements IAuctionService {
     }
 
 
+
+
     @Override
     public Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest) {
 
         String strItemStatus= criteria.getItemStatus();
-        String strAddress = criteria.getAddress();
+        List<String> strAddress = criteria.getAddress();
         ItemStatus itemStatus;
-        Address address;
+        List<Address> address;
         if(strItemStatus.isEmpty() || strItemStatus.isBlank()){
              itemStatus=null;
         }else{
              itemStatus=ItemStatus.valueOf(strItemStatus);
         }
 
-        if(strAddress.isEmpty() || strAddress.isBlank()){
+        if(strAddress.isEmpty()){
             address=null;
         }else {
-            address=Address.valueOf(strAddress);
+
+            address=strAddress.stream().map((s)->{
+                        if(!s.isEmpty() || !s.isBlank()) {
+                            return Address.valueOf(s.toUpperCase());
+                        }else{
+                            return null;
+                        }
+                    }).filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+
         }
-        Specification<Auction> spec= Specification.where(AuctionSpecification.hasActive())
-                .and(AuctionSpecification.hasName(criteria.getSearchKey()))
+        Specification<Auction> spec= Specification.where(AuctionSpecification.hasName(criteria.getSearchKey()))
                 .or(AuctionSpecification.hasDescription(criteria.getSearchKey()))
                 .and(AuctionSpecification.hasItemStatus(itemStatus))
                 .and(AuctionSpecification.hasCategory(criteria.getCategory()))
                 .and(AuctionSpecification.hasDateRange(criteria.getBeginDate() , criteria.getExpireDate()))
                 .and(AuctionSpecification.hasAddress(address))
-                .and(AuctionSpecification.hasPriceBetween(criteria.getMinCurrentPrice(), criteria.getMaxCurrentPrice()));
+                .and(AuctionSpecification.hasPriceBetween(criteria.getMinCurrentPrice(), criteria.getMaxCurrentPrice()))
+                .and(AuctionSpecification.hasActive());
 
         return auctionRepository.findAll(spec, pageRequest);
     }
