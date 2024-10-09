@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import java.util.List;
 public class User extends Account{
 
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonBackReference
     private PaymentAccount paymentAccount;
 

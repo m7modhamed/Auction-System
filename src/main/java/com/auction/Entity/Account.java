@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
+@EqualsAndHashCode
 @Getter
 @Setter
 @Entity

@@ -5,11 +5,12 @@ import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
 @Entity
-@Data
+@Setter
+@Getter
+@EqualsAndHashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Image")
 public class Image {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

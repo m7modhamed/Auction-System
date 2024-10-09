@@ -3,13 +3,18 @@ package com.auction.Entity;
 import com.auction.Enums.ItemStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Entity
-@Data
+@Setter
+@Getter
+@EqualsAndHashCode
 @Table(name = "Item")
 public class Item {
 
@@ -35,7 +40,7 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER)
     private Category category;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Map<String,String> categoryAttributes;
 
 

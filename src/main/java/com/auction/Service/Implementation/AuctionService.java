@@ -10,6 +10,7 @@ import com.auction.Mappers.IAuctionMapper;
 import com.auction.Repository.AuctionRepository;
 import com.auction.Repository.AuctionSpecification;
 import com.auction.Repository.CategoryRepository;
+import com.auction.Service.Interfaces.IAccountService;
 import com.auction.Service.Interfaces.IAuctionService;
 import com.auction.Service.Interfaces.IUserService;
 import com.auction.exceptions.AppException;
@@ -35,7 +36,7 @@ public class AuctionService implements IAuctionService {
     private final IAuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
     private final CategoryRepository categoryRepository;
-    private final AccountService accountService;
+    private final IAccountService accountService;
 
     private static final int DELETION_TIME_LIMIT =20;
     private final IUserService userService;
@@ -171,13 +172,6 @@ public class AuctionService implements IAuctionService {
         return user.get().getWonAuctions();
     }
 
-
-
-
-
-
-
-
     @Override
     public List<Auction> getActiveAuctions() {
         return auctionRepository.findByActiveTrue();
@@ -187,13 +181,23 @@ public class AuctionService implements IAuctionService {
     public void joinAuction(long auctionId) {
         User user =(User) Utility.getCurrentAccount();
         Auction auction = getAuctionById(auctionId);
+
+        if(!auction.getActive()){
+            throw new AppException("You are attempting to join an expired auction.", HttpStatus.BAD_REQUEST);
+        }
+        if(user.getMyAuctions().contains(auction)){
+            throw new AppException("You are trying to join your own auction.", HttpStatus.CONFLICT);
+        }
         user.getJoinedAuctions().add(auction);
+
+        //here must charge the reserved amount for the user to join the auction
+        //******
+        //********
+
         userService.save(user);
     }
 
-
-
-
+    
     @Override
     public Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest) {
 

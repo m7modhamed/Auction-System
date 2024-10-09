@@ -3,19 +3,23 @@ package com.auction.Entity;
 import com.auction.Enums.Address;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
-@Table(name = "Auction")
+@Setter
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Auction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
 
