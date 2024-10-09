@@ -43,11 +43,18 @@ public class AuctionController {
         return ResponseEntity.created(URI.create("/")).body(responseAuctionDto);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<GetAuctionDto> getAuctionById(@PathVariable Long id) {
+    @GetMapping("/user/{id}")
+    public ResponseEntity<GetAuctionDto> getAuctionByIdFormUser(@PathVariable Long id) {
         GetAuctionDto getAuctionDto = auctionService.getAuctionDtoById(id);
 
         return ResponseEntity.ok(getAuctionDto);
+    }
+
+    @GetMapping("/guest/{id}")
+    public ResponseEntity<ResponseAuctionDto> getAuctionByIdFormGuest(@PathVariable Long id) {
+        Auction auction = auctionService.getAuctionById(id);
+
+        return ResponseEntity.ok(auctionMapper.toResponseAuctionDto(auction));
     }
 
     @DeleteMapping("/{id}")

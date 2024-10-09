@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auctions","/category/all").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auctions","/category/all","/auctions/guest/**").permitAll()
                         .requestMatchers("/moderator/**" ).hasRole("MODERATOR")
                         .requestMatchers(HttpMethod.GET,"/admin").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,"/user").hasRole("USER")
