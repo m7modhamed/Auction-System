@@ -1,6 +1,7 @@
 package com.auction.Service.Interfaces;
 
 import com.auction.Dtos.AuctionSearchCriteria;
+import com.auction.Dtos.GetAuctionDto;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.User;
@@ -18,7 +19,7 @@ public interface IAuctionService {
     List<Auction> getAllAuctions();
 
     Auction getAuctionById(Long auctionId);
-
+    GetAuctionDto getAuctionDtoById(Long auctionId);
     void deleteAuctionById(Long id, Long userId);
 
     List<Auction> getMyAuctions(Long userId);

@@ -1,6 +1,7 @@
 package com.auction.Service.Implementation;
 
 import com.auction.Dtos.AuctionSearchCriteria;
+import com.auction.Dtos.GetAuctionDto;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Entity.Auction;
 import com.auction.Entity.Category;
@@ -90,6 +91,24 @@ public class AuctionService implements IAuctionService {
         }
 
         return auction.get();
+    }
+
+    @Override
+    public GetAuctionDto getAuctionDtoById(Long auctionId) {
+
+        Optional<Auction> auction = auctionRepository.findById(auctionId);
+        if(auction.isEmpty()){
+            throw new AppException("Auction not found", HttpStatus.NOT_FOUND);
+        }
+
+        User user=(User)Utility.getCurrentAccount();
+
+        GetAuctionDto getAuctionDto=auctionMapper.toGetAuctionDto(auction.get());
+        if(user.getJoinedAuctions().contains(auction.get())){
+            getAuctionDto.setJoined(true);
+        }
+        return getAuctionDto;
+
     }
 
 
@@ -197,7 +216,7 @@ public class AuctionService implements IAuctionService {
         userService.save(user);
     }
 
-    
+
     @Override
     public Page<Auction> getActiveAuctions(AuctionSearchCriteria criteria, PageRequest pageRequest) {
 

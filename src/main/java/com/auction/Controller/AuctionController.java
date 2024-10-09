@@ -1,14 +1,12 @@
 package com.auction.Controller;
 
 import com.auction.Dtos.AuctionSearchCriteria;
+import com.auction.Dtos.GetAuctionDto;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
-import com.auction.Entity.User;
 import com.auction.Mappers.IAuctionMapper;
-import com.auction.Service.Implementation.UserService;
 import com.auction.Service.Interfaces.IAuctionService;
-import com.auction.Service.Interfaces.IUserService;
 import com.auction.utility.Utility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,6 @@ public class AuctionController {
 
     private final IAuctionMapper auctionMapper;
     private final IAuctionService auctionService;
-    private final IUserService userService;
 
 
     @PostMapping
@@ -47,11 +44,10 @@ public class AuctionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseAuctionDto> getAuctionById(@PathVariable Long id) {
-        Auction auction = auctionService.getAuctionById(id);
+    public ResponseEntity<GetAuctionDto> getAuctionById(@PathVariable Long id) {
+        GetAuctionDto getAuctionDto = auctionService.getAuctionDtoById(id);
 
-        ResponseAuctionDto responseAuctionDto = auctionMapper.toResponseAuctionDto(auction);
-        return ResponseEntity.ok(responseAuctionDto);
+        return ResponseEntity.ok(getAuctionDto);
     }
 
     @DeleteMapping("/{id}")
@@ -71,7 +67,7 @@ public class AuctionController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ResponseAuctionDto>> getAuctionsFor(
+    public ResponseEntity<Page<ResponseAuctionDto>> getAuctions(
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortBy", required = false) String[] sortBy,

@@ -1,5 +1,6 @@
 package com.auction.Mappers;
 
+import com.auction.Dtos.GetAuctionDto;
 import com.auction.Dtos.RequestAuctionDto;
 import com.auction.Dtos.ResponseAuctionDto;
 import com.auction.Entity.Auction;
@@ -14,5 +15,6 @@ public interface IAuctionMapper {
 
     ResponseAuctionDto toResponseAuctionDto(Auction auction);
 
+    GetAuctionDto toGetAuctionDto(Auction auction);
 
 }
