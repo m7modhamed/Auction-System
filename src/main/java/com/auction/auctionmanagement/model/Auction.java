@@ -46,15 +46,12 @@ public class Auction {
     @Column
     private double commission;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", referencedColumnName = "id", nullable = false)
-    @JsonIgnore
-    @JsonBackReference
     private User seller;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_id", referencedColumnName = "id")
-    @JsonIgnore
     @JsonBackReference
     private User winner;
 
@@ -68,9 +65,12 @@ public class Auction {
     @Column(nullable = false)
     private double currentPrice;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "auction")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "auction")
     @JsonManagedReference
     private List<Bid> bids;
 
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "JoinedAuctions")
+    private List<User> participants;
 
 }

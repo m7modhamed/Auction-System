@@ -46,7 +46,7 @@ public class SysAccount implements UserDetails {
     private Boolean isBlocked;
 
     @JoinColumn(name = "image_id", referencedColumnName = "id")
-    @OneToOne(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private ProfileImage profileImage;
 
     private String phoneNumber;

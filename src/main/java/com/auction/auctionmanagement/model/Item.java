@@ -5,18 +5,18 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Entity
 @Setter
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false )
@@ -25,9 +25,9 @@ public class Item {
     private String description;
 
 
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id" , referencedColumnName = "id")
-    private List<AuctionImage> auctionImages =new ArrayList<>();
+    private List<AuctionImage> auctionImages;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

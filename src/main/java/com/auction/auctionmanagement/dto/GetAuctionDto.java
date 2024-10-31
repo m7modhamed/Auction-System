@@ -43,6 +43,8 @@ public class GetAuctionDto {
 
     private List<ResponseBidDto> bids;
 
+    private UserDto winner;
+
     @Value("false")
     private boolean isJoined;
 

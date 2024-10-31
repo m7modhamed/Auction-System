@@ -38,11 +38,9 @@ public class SecurityConfig {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**","/forgot-password-request/**","/reset-password/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/auctions","/category/all","/auctions/guest/**").permitAll()
-                        .requestMatchers("/moderator/**" ).hasRole("MODERATOR")
-                        .requestMatchers(HttpMethod.GET,"/admin").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/user").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**"
+                                ,"/forgot-password-request/**","/reset-password/**" ,"/auctions/all/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/category/all","/auctions/guest/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();

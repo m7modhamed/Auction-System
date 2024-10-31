@@ -41,6 +41,6 @@ public class ResponseAuctionDto {
 
     private List<ResponseBidDto> bids;
 
-
+    private UserDto winner;
 
 }

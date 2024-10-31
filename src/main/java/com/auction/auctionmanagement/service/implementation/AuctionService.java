@@ -32,7 +32,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -234,32 +233,31 @@ public class AuctionService implements IAuctionService {
       }
   }
 
-  private boolean isEligibleToCancelPaymentIntent(Auction auction , Transaction transaction){
+    @Override
+    public List<Auction> getUserJoinedAuctions(Long accountId) {
+
+        User user = (User)AccountUtil.getCurrentAccount();
+
+        return auctionRepository.findAuctionsJoinedByUser(user.getId());
+    }
+
+
+    private boolean isEligibleToCancelPaymentIntent(Auction auction , Transaction transaction){
 
         return transaction.getAuction().equals(auction)
                 && transaction.getType() == TransactionType.JOIN_AUCTION
                 && transaction.getStatus().equals("requires_capture");
-  }
+    }
 
 
     @Override
     public List<Auction> getMyAuctions(Long userId) {
-        Optional<User> user= accountService.getUserById(userId);
-        if(user.isEmpty()){
-            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
-        }
-
-        return user.get().getMyAuctions();
+        return auctionRepository.findAllBySellerId(userId);
     }
 
     @Override
     public List<Auction> getMyWonAuctions(Long userId) {
-        Optional<User> user= accountService.getUserById(userId);
-        if(user.isEmpty()){
-            throw new AppException("the user dose not exist",HttpStatus.NOT_FOUND);
-        }
-
-        return user.get().getWonAuctions();
+        return auctionRepository.findAllByWinnerId(userId);
     }
 
     @Override

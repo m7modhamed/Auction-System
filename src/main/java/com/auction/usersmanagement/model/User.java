@@ -2,11 +2,9 @@ package com.auction.usersmanagement.model;
 
 import com.auction.auctionmanagement.model.Auction;
 import com.auction.paymentmanagement.model.PaymentAccount;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -23,7 +21,6 @@ public class User extends SysAccount {
 
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
-    @JsonManagedReference
     private List<Auction> myAuctions;
 
 
@@ -39,6 +36,8 @@ public class User extends SysAccount {
             inverseJoinColumns = @JoinColumn(name = "auction_id"))
     @JsonManagedReference
     private List<Auction> JoinedAuctions;
+
+
 
 
 }

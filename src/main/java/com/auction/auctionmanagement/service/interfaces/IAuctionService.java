@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IAuctionService {
 
@@ -32,4 +33,6 @@ public interface IAuctionService {
     void receiveAuctionItem(Long auctionId);
 
     void returnReservedAmountToBidders(Auction auction);
+
+    List<Auction> getUserJoinedAuctions(Long accountId);
 }

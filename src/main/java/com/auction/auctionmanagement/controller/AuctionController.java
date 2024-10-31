@@ -1,9 +1,6 @@
 package com.auction.auctionmanagement.controller;
 
-import com.auction.auctionmanagement.dto.AuctionSearchCriteria;
-import com.auction.auctionmanagement.dto.GetAuctionDto;
-import com.auction.auctionmanagement.dto.RequestAuctionDto;
-import com.auction.auctionmanagement.dto.ResponseAuctionDto;
+import com.auction.auctionmanagement.dto.*;
 import com.auction.auctionmanagement.model.Auction;
 import com.auction.auctionmanagement.Mapper.IAuctionMapper;
 import com.auction.auctionmanagement.service.interfaces.IAuctionService;
@@ -71,7 +68,7 @@ public class AuctionController {
     }
 
     @PostMapping("/all")
-    public ResponseEntity<Page<ResponseAuctionDto>> getAuctions(
+    public ResponseEntity<Page<AbstractionAuctionInfoDto>> getAuctions(
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortBy", required = false) String[] sortBy,
@@ -90,11 +87,10 @@ public class AuctionController {
 
         Page<Auction> auctionPage = auctionService.getActiveAuctions(searchCriteria, pageRequest);
 
-        Page<ResponseAuctionDto> responseAuctionPage = auctionPage.map(auctionMapper::toResponseAuctionDto);
+        Page<AbstractionAuctionInfoDto> responseAuctionPage = auctionPage.map(auctionMapper::toAbstractionAuctionInfoDto);
 
         return ResponseEntity.ok(responseAuctionPage);
     }
-
 
 
     @GetMapping("/myAuctions")
@@ -103,10 +99,7 @@ public class AuctionController {
 
         List<Auction> auctions = auctionService.getMyAuctions(accountId);
 
-        List<ResponseAuctionDto> responseAuction=new ArrayList<>();
-        for(Auction auction: auctions){
-            responseAuction.add(auctionMapper.toResponseAuctionDto(auction));
-        }
+        List<ResponseAuctionDto> responseAuction = auctionMapper.toResponseAuctionDtos(auctions);
         return ResponseEntity.ok(responseAuction);
     }
 
@@ -116,10 +109,9 @@ public class AuctionController {
 
         List<Auction> auctions = auctionService.getMyWonAuctions(accountId);
 
-        List<ResponseAuctionDto> responseAuction=new ArrayList<>();
-        for(Auction auction: auctions){
-            responseAuction.add(auctionMapper.toResponseAuctionDto(auction));
-        }
+        List<ResponseAuctionDto> responseAuction =  auctionMapper.toResponseAuctionDtos(auctions);
+
+
         return ResponseEntity.ok(responseAuction);
     }
 
@@ -138,6 +130,21 @@ public class AuctionController {
         auctionService.receiveAuctionItem(auctionId);
 
         return ResponseEntity.ok("The item for auction ID " + auctionId + " has been successfully received.");
+    }
+
+
+    @GetMapping("/joined")
+    public ResponseEntity<List<ResponseAuctionDto>> getUserAuctions(){
+
+        Long accountId=AccountUtil.getCurrentAccountId();
+
+
+        List<Auction> auctions =  auctionService.getUserJoinedAuctions(accountId);
+
+        List<ResponseAuctionDto> responseAuction =  auctionMapper.toResponseAuctionDtos(auctions);
+
+
+        return ResponseEntity.ok(responseAuction);
     }
 
 }

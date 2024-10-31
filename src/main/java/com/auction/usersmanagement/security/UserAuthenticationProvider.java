@@ -55,6 +55,7 @@ public class UserAuthenticationProvider {
                 .withSubject(sysAccount.getEmail())
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
+                .withClaim("id" , sysAccount.getId())
                 .withClaim("firstName", sysAccount.getFirstName())
                 .withClaim("lastName", sysAccount.getLastName())
                 .withClaim("roles" , new ArrayList<>(sysAccount.getRoles().stream().map(Role::getName).collect(Collectors.toList())))
@@ -63,8 +64,6 @@ public class UserAuthenticationProvider {
                 .withClaim("image" , userImageUrl)
                 .sign(algorithm);
     }
-
-
 
 
     public Authentication validateTokenStrongly(String token, HttpServletRequest request) {
