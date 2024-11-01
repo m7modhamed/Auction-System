@@ -8,6 +8,8 @@ import com.auction.usersmanagement.service.interfaces.ITokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TokenService implements ITokenService {
     private final TokenRepository tokenRepository;
 

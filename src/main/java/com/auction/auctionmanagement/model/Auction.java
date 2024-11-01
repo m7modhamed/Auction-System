@@ -65,7 +65,7 @@ public class Auction {
     @Column(nullable = false)
     private double currentPrice;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "auction")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "auction")
     @JsonManagedReference
     private List<Bid> bids;
 

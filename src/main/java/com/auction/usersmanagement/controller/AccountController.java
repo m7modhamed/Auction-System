@@ -73,9 +73,9 @@ public class AccountController {
     @PutMapping("/update-account")
     public ResponseEntity<String> updateAccountInfo(@RequestBody UpdateAccountDto updateAccountDto){
 
-        accountService.updateAccount(updateAccountDto);
+        SysAccount account = accountService.updateAccount(updateAccountDto);
 
-        String token=userAuthenticationProvider.createToken(AccountUtil.getCurrentAccount());
+        String token=userAuthenticationProvider.createToken(account);
 
         return ResponseEntity.ok(token);
     }

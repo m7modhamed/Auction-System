@@ -10,7 +10,6 @@ import lombok.*;
 @Setter
 @Getter
 @EqualsAndHashCode
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileImage {

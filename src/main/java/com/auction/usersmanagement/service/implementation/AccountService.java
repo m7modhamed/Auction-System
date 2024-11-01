@@ -12,7 +12,6 @@ import com.auction.usersmanagement.event.RegistrationCompleteEvent;
 import com.auction.usersmanagement.event.listener.RegistrationCompleteEventListener;
 import com.auction.usersmanagement.repository.AccountRepository;
 import com.auction.usersmanagement.repository.RoleRepository;
-import com.auction.usersmanagement.repository.UserRepository;
 import com.auction.common.exceptions.AppException;
 import com.auction.common.utility.UrlUtil;
 import com.auction.common.utility.AccountUtil;
@@ -37,9 +36,9 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AccountService implements IAccountService {
 
-    private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final IUserMapper userMapper;
@@ -98,7 +97,7 @@ public class AccountService implements IAccountService {
             throw new AppException("Failed to create stripe customer",HttpStatus.valueOf(e.getStatusCode()));
         }
 
-        User savedAccount = userRepository.save(user);
+        User savedAccount = accountRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(savedAccount, UrlUtil.getClientUrl(request)));
         return savedAccount;
     }
@@ -119,7 +118,6 @@ public class AccountService implements IAccountService {
         return ResponseEntity.ok("sysAccount verify successfully");
     }
 
-    @Transactional(readOnly = true)
     public SysAccount findByEmail(String email) {
         return accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
@@ -157,39 +155,33 @@ public class AccountService implements IAccountService {
         return "Password reset successfully";
     }
 
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
-    }
 
 
     @Override
-    public void updateAccount(UpdateAccountDto updateAccountDto) {
+    public SysAccount updateAccount(UpdateAccountDto updateAccountDto) {
 
-        long id = AccountUtil.getCurrentAccountId();
+        SysAccount account = AccountUtil.getCurrentAccount();
 
-        Optional<SysAccount> account = getAccountById(id);
-
-        if (account.isEmpty()) {
-            throw new AppException("SysAccount not found.", HttpStatus.NOT_FOUND);
-        } else if (account.get().getProfileImage() == null) {
+       if (account.getProfileImage() == null) {
             throw new AppException("No auctionImage associated with this account.", HttpStatus.NOT_FOUND);
         }
 
-        account.get().setFirstName(updateAccountDto.getFirstName());
-        account.get().setLastName(updateAccountDto.getLastName());
+        account.setFirstName(updateAccountDto.getFirstName());
+        account.setLastName(updateAccountDto.getLastName());
         // add auctionImage id to new auctionImage
         ProfileImage newImg=updateAccountDto.getProfileImage();
-        newImg.setId(account.get().getProfileImage().getId());
-        account.get().setProfileImage(newImg);
+        newImg.setId(account.getProfileImage().getId());
+        account.setProfileImage(newImg);
 
-        accountRepository.save(account.get());
+        return accountRepository.save(account);
 
     }
 
 
-    private Optional<SysAccount> getAccountById(Long accountId) {
-
-        return accountRepository.findById(accountId);
+    public SysAccount getAccountById(Long accountId) {
+        return accountRepository.findById(accountId).orElseThrow(
+                () -> new AppException("Account with ID " + accountId + " not found.", HttpStatus.NOT_FOUND)
+        );
     }
 
 

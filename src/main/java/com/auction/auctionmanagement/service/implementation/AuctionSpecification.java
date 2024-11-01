@@ -1,4 +1,4 @@
-package com.auction.auctionmanagement.repository;
+package com.auction.auctionmanagement.service.implementation;
 
 import com.auction.auctionmanagement.enums.AuctionStatus;
 import com.auction.auctionmanagement.model.Auction;

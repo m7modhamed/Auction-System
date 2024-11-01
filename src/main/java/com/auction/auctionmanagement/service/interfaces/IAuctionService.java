@@ -7,9 +7,7 @@ import com.auction.auctionmanagement.enums.AuctionStatus;
 import com.auction.auctionmanagement.model.Auction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
 import java.util.List;
-import java.util.Set;
 
 public interface IAuctionService {
 

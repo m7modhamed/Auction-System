@@ -8,11 +8,10 @@ import com.auction.auctionmanagement.enums.AuctionStatus;
 import com.auction.auctionmanagement.enums.ItemStatus;
 import com.auction.auctionmanagement.Mapper.IAuctionMapper;
 import com.auction.auctionmanagement.repository.AuctionRepository;
-import com.auction.auctionmanagement.repository.AuctionSpecification;
-import com.auction.auctionmanagement.repository.CategoryRepository;
 import com.auction.auctionmanagement.model.Auction;
 import com.auction.auctionmanagement.model.Category;
 import com.auction.auctionmanagement.service.interfaces.IAuctionService;
+import com.auction.auctionmanagement.service.interfaces.ICategoryService;
 import com.auction.common.exceptions.AppException;
 import com.auction.paymentmanagement.enums.TransactionType;
 import com.auction.paymentmanagement.model.PaymentAccount;
@@ -33,9 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,11 +42,10 @@ public class AuctionService implements IAuctionService {
 
     private final IAuctionMapper auctionMapper;
     private final AuctionRepository auctionRepository;
-    private final CategoryRepository categoryRepository;
     private final IAccountService accountService;
     private final IUserService userService;
     private final IPaymentService paymentService;
-
+    private final ICategoryService categoryService;
 
     private static final int DELETION_TIME_LIMIT =20;
 
@@ -60,31 +56,31 @@ public class AuctionService implements IAuctionService {
 
         newAuction.setBeginDate(LocalDateTime.now());
 
-
         if(requestAuctionDto.getExpireDate().isBefore(LocalDateTime.now().plusHours(1))){
             throw new AppException("The expiration time must be at least after 1 hour from now",HttpStatus.BAD_REQUEST);
         }
 
+        Category category=categoryService.getCategoryById(requestAuctionDto.getItem().getCategory().getId());
 
-        Optional<Category> category=categoryRepository.findById(requestAuctionDto.getItem().getCategory().getId());
+        newAuction.getItem().setCategory(category);
 
-        if(category.isEmpty()){
-            throw new AppException("Category not found", HttpStatus.NOT_FOUND);
+        Set<String> attributesFromRequest = newAuction.getItem().getCategoryAttributes().keySet();
+        Set<String> attributesFromCategory =new HashSet<>(category.getAttributes());
+
+        if(!attributesFromCategory.containsAll(attributesFromRequest)){
+            throw new AppException("The category attributes do not match",HttpStatus.BAD_REQUEST);
         }
-        newAuction.getItem().setCategory(category.get());
 
-        Optional<User> user= accountService.getUserById(userId);
-        if(user.isEmpty()){
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-        }
-        newAuction.setSeller(user.get());
+        User user =(User) accountService.getAccountById(userId);
+
+        newAuction.setSeller(user);
         newAuction.setCurrentPrice(newAuction.getInitialPrice());
         newAuction.setStatus(AuctionStatus.ACTIVE);
 
         //handle payment charge
         //We have to charge the seller reserved amount to ensure the seriousness of the auction
         //the amount will be percentage of initial price
-        PaymentAccount paymentAccount = user.get().getPaymentAccount();
+        PaymentAccount paymentAccount = user.getPaymentAccount();
         if(paymentAccount.getPaymentMethod() == null){
             throw new AppException("you have to enter payment method", HttpStatus.BAD_REQUEST);
         }
@@ -94,7 +90,7 @@ public class AuctionService implements IAuctionService {
         try {
             double reservedAmountInCent= PriceCalculator.calculateReservedAmount(createdAuction.getInitialPrice()) * 100;
 
-            paymentService.createPaymentIntent(createdAuction , user.get() ,(long) reservedAmountInCent , TransactionType.CREATE_AUCTION ,  PaymentIntentCreateParams.CaptureMethod.MANUAL);
+            paymentService.createPaymentIntent(createdAuction , user ,(long) reservedAmountInCent , TransactionType.CREATE_AUCTION ,  PaymentIntentCreateParams.CaptureMethod.MANUAL);
         } catch (StripeException e) {
             throw new AppException(e.getMessage() , HttpStatus.BAD_REQUEST);
         }
@@ -105,11 +101,9 @@ public class AuctionService implements IAuctionService {
 
     @Override
     public Auction getAuctionById(Long auctionId) {
-
        return auctionRepository.findById(auctionId).orElseThrow(
                () -> new AppException("Auction not found", HttpStatus.NOT_FOUND)
        );
-
     }
 
     @Override
@@ -125,7 +119,6 @@ public class AuctionService implements IAuctionService {
             getAuctionDto.setJoined(true);
         }
         return getAuctionDto;
-
     }
 
 
@@ -148,7 +141,7 @@ public class AuctionService implements IAuctionService {
         Auction auction = getAuctionById(auctionId);
         User winner= auction.getWinner();
         if(auction.getStatus() != AuctionStatus.TIME_OUT){
-            throw new AppException("Receiving this item is only allowed once the auction is fully complete.", HttpStatus.BAD_REQUEST);
+            throw new AppException("The item can only be received once the auction has officially ended.", HttpStatus.BAD_REQUEST);
         } else if(winner == null){
             throw new AppException("The auction winner has not been determined yet.", HttpStatus.BAD_REQUEST);
         }else if(!user.getId().equals(winner.getId())){
@@ -186,7 +179,6 @@ public class AuctionService implements IAuctionService {
                 break;
             }
         }
-
 
         //check the time before deletion
         LocalDateTime currentTime = LocalDateTime.now();
