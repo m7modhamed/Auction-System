@@ -11,6 +11,7 @@ import com.auction.common.utility.AccountUtil;
 import com.auction.usersmanagement.validation.customAnnotations.ValidPassword;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,14 @@ public class AccountController {
         SysAccount createdSysAccount = accountService.register(signUpRequestDto,request);
 
         return ResponseEntity.created(URI.create("/users/" + createdSysAccount.getId())).body("User registered successfully. Please check your email to verify your account.");
+    }
+
+    @GetMapping("/reSendVerifyEmail")
+    public ResponseEntity<String> reSendVerifyEmail(@RequestParam("email") @Valid @Email String email , HttpServletRequest request) {
+
+        accountService.reSendVerifyEmail(email,request);
+
+        return ResponseEntity.ok("Verification email has been resent successfully.");
     }
 
     @GetMapping("/verifyEmail")

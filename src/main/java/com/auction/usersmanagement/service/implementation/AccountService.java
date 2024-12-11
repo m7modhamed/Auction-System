@@ -118,6 +118,13 @@ public class AccountService implements IAccountService {
         return ResponseEntity.ok("sysAccount verify successfully");
     }
 
+    @Override
+    public void reSendVerifyEmail(String email , HttpServletRequest request) {
+        SysAccount account = findByEmail(email);
+        publisher.publishEvent(new RegistrationCompleteEvent(account, UrlUtil.getClientUrl(request)));
+
+    }
+
     public SysAccount findByEmail(String email) {
         return accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
