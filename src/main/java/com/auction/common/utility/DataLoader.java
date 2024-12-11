@@ -42,6 +42,7 @@ public class DataLoader implements CommandLineRunner {
             mobileCategory.setName("Mobile");
             mobileCategory.setDescription("Category for mobile phones and accessories.");
             mobileCategory.setAttributes(List.of("Brand", "Model", "Screen Size", "Battery Life"));
+            mobileCategory.setImageUrl("https://images.pexels.com/photos/3756879/pexels-photo-3756879.jpeg?auto=compress&cs=tinysrgb&w=600");
             categoryRepository.save(mobileCategory);
         }
 

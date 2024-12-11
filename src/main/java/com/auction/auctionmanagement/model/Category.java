@@ -25,4 +25,6 @@ public class Category {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> attributes;
+
+    private String imageUrl;
 }

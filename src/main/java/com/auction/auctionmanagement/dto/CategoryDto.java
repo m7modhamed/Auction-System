@@ -22,5 +22,5 @@ public class CategoryDto {
 
     private List<String> attributes;
 
-
+    private String imageUrl;
 }
