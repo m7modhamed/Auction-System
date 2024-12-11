@@ -83,6 +83,20 @@ public class BidService implements IBidService {
         return bid.getAuction();
     }
 
+
+    @Override
+    public boolean canDeleteBidWithoutCharge(Long id) {
+        Bid bid = getBidById(id);
+
+        if(!bid.getStatus().equals(BidStatus.ACTIVE)){
+            return false;
+        }
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime deletionAllowedTime = bid.getBidTime().plusMinutes(DELETION_TIME_LIMIT);
+
+        return currentTime.isBefore(deletionAllowedTime);
+    }
+
     @Override
     public void deleteBidById(Long bidId, Long userId) {
         User user = userService.getUserById(userId);

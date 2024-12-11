@@ -1,5 +1,6 @@
 package com.auction.auctionmanagement.dto;
 
+import com.auction.auctionmanagement.enums.BidStatus;
 import com.auction.usersmanagement.dto.UserDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,7 @@ public class ResponseBidDto {
     private double amount;
 
     private UserDto bidder;
+
+    private BidStatus status;
+
 }

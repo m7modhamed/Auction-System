@@ -32,6 +32,14 @@ public class BidController {
         return ResponseEntity.ok(responseAuctionDto);
     }
 
+
+    @GetMapping("/isDeleteFree/{id}")
+    public ResponseEntity<Boolean> isOverDeleteTime(@PathVariable Long id){
+
+        return ResponseEntity.ok(bidService.canDeleteBidWithoutCharge(id));
+    }
+
+
     @DeleteMapping("delete/{bidId}")
     public ResponseEntity<String> deleteBid(@PathVariable Long bidId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -41,6 +49,8 @@ public class BidController {
 
         return ResponseEntity.ok("Bid with ID " + bidId + " deleted successfully.");
     }
+
+
 
 
 

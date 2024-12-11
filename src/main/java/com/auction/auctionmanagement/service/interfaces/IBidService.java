@@ -9,6 +9,7 @@ import java.util.List;
 public interface IBidService {
     Auction createNewBid(RequestBidDto requestBidDto, Long userId);
 
+    public boolean canDeleteBidWithoutCharge(Long id);
     void deleteBidById(Long bidId, Long userId);
 
     Bid getLatestBid(Auction auction);
