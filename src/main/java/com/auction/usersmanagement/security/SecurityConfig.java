@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.POST, "/login", "/register" ,"/verifyEmail/**"
                                 ,"/forgot-password-request/**","/reset-password/**" ,"/auctions/all/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/category/all","/auctions/guest/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/verifyEmail/**","/reSendVerifyEmail/**","/category/all","/auctions/guest/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
