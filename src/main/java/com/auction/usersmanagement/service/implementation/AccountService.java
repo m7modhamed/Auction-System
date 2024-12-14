@@ -119,8 +119,8 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public void reSendVerifyEmail(String email , HttpServletRequest request) {
-        SysAccount account = findByEmail(email);
+    public void reSendVerifyEmail(String token , HttpServletRequest request) {
+        SysAccount account = tokenService.getAccountByToken(token);
         publisher.publishEvent(new RegistrationCompleteEvent(account, UrlUtil.getClientUrl(request)));
 
     }

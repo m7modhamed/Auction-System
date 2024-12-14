@@ -46,6 +46,11 @@ public class TokenService implements ITokenService {
     }
 
     @Override
+    public SysAccount getAccountByToken(String token) {
+        return tokenRepository.findByToken(token).orElseThrow(()-> new AppException("The token could not be found.", HttpStatus.NOT_FOUND)).getSysAccount();
+    }
+
+    @Override
     public void saveVerificationTokenForUser(SysAccount sysAccount, String token) {
         var verificationToken = new Token(token, sysAccount);
         tokenRepository.save(verificationToken);

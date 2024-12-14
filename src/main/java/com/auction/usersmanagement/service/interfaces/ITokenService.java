@@ -18,4 +18,6 @@ public interface ITokenService {
     Token validateToken(String theToken);
 
     void saveToken(Token tokenObj);
+
+    SysAccount getAccountByToken(String token);
 }

@@ -50,9 +50,9 @@ public class AccountController {
     }
 
     @GetMapping("/reSendVerifyEmail")
-    public ResponseEntity<String> reSendVerifyEmail(@RequestParam("email") @Valid @Email String email , HttpServletRequest request) {
+    public ResponseEntity<String> reSendVerifyEmail(@RequestParam("token") String token , HttpServletRequest request) {
 
-        accountService.reSendVerifyEmail(email,request);
+        accountService.reSendVerifyEmail(token,request);
 
         return ResponseEntity.ok("Verification email has been resent successfully.");
     }

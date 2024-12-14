@@ -20,5 +20,5 @@ public interface IAccountService {
 
     ResponseEntity<String> activateUser(String token);
 
-    void reSendVerifyEmail(String email , HttpServletRequest request);
+    void reSendVerifyEmail(String token , HttpServletRequest request);
 }
