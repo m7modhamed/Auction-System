@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "_user")
 public class User extends SysAccount {
 
 

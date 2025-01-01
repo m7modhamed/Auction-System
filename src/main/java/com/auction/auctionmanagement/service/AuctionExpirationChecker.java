@@ -73,7 +73,7 @@ public class AuctionExpirationChecker {
             try {
                 paymentService.cancelPaymentIntent(requiredTransaction);
             } catch (StripeException e) {
-                throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
+                //throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
 
             auction.setStatus(AuctionStatus.COMPLETED);
@@ -81,12 +81,12 @@ public class AuctionExpirationChecker {
             auctionRepository.save(auction);
             return;
         }
-        double auctionCommission ;
+        double auctionCommission=0 ;
         try {
             PaymentIntent commissionpaymentIntent = paymentService.capturePaymentIntent(requiredTransaction);
             auctionCommission = (double) commissionpaymentIntent.getAmount() / 100;
         } catch (StripeException e) {
-            throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
+            //throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
 

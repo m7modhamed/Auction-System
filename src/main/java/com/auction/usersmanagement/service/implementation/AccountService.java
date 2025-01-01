@@ -171,7 +171,7 @@ public class AccountService implements IAccountService {
 
        if (account.getProfileImage() == null) {
             throw new AppException("No auctionImage associated with this account.", HttpStatus.NOT_FOUND);
-        }
+       }
 
         account.setFirstName(updateAccountDto.getFirstName());
         account.setLastName(updateAccountDto.getLastName());

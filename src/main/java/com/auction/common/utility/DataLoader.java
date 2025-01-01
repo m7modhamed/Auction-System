@@ -3,6 +3,7 @@ package com.auction.common.utility;
 import com.auction.auctionmanagement.model.Category;
 import com.auction.auctionmanagement.repository.CategoryRepository;
 import com.auction.usersmanagement.model.Moderator;
+import com.auction.usersmanagement.model.ProfileImage;
 import com.auction.usersmanagement.model.Role;
 import com.auction.usersmanagement.repository.ModeratorRepository;
 import com.auction.usersmanagement.repository.RoleRepository;
@@ -169,6 +170,11 @@ public class DataLoader implements CommandLineRunner {
             moderator.setIsActive(true);
             moderator.setIsBlocked(false);
             moderator.getRoles().add(moderatorRole);
+
+            ProfileImage profileImage = new ProfileImage();
+            profileImage.setName("profile image");
+            profileImage.setImageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUspugOXub65sbxVHOEaD-JEKC8NNWgkWhlg&s");
+            moderator.setProfileImage(profileImage);
             moderatorRepository.save(moderator);
         }
     }
