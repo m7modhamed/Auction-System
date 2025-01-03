@@ -217,7 +217,7 @@ public class AuctionService implements IAuctionService {
                   try {
                       paymentService.cancelPaymentIntent(transaction);
                   } catch (StripeException e) {
-                      throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
+                      //throw new AppException(e.getMessage(), HttpStatus.BAD_REQUEST);
                   }
 
               }
