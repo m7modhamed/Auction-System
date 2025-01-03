@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 public class AuctionImage {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @EqualsAndHashCode.Include
     private Long id;

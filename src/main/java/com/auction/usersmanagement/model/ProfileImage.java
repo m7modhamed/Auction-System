@@ -14,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ProfileImage {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 

@@ -128,7 +128,7 @@ public class BidService implements IBidService {
             try {
                 paymentService.capturePaymentIntent(requiredTransaction);
             } catch (StripeException e) {
-                throw new AppException(e.getMessage() , HttpStatus.BAD_REQUEST);
+                //throw new AppException(e.getMessage() , HttpStatus.BAD_REQUEST);
             }
         }
 
