@@ -5,10 +5,12 @@ import com.auction.paymentmanagement.repository.TransactionRepository;
 import com.auction.paymentmanagement.service.interfaces.ITransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class TransactionService implements ITransactionService {
 
     private final TransactionRepository transactionRepository;

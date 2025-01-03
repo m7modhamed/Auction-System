@@ -24,10 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.stripe.param.AccountCreateParams;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PaymentService implements IPaymentService {
 
     private final UserService userService;
